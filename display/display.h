@@ -20,6 +20,7 @@ extern "C" {
 #include "./backlight/disp_backlight.h"
 #include "./panel/disp_panel.h"
 #include "./panel/interga/panel_com.h"
+#include "./port/disp_panel_spi_port.h"
 /*********************
  *    DECLARATIONS
  *********************/
@@ -67,7 +68,7 @@ void disp_backlight_set_brightness   (const struct display * self, uint8_t brigh
 void disp_panel_register_instance(struct display * self, disp_panel_type_t type);
 
 /* defined in panel_com.c */
-const panel_spi_t ** disp_port_get_spi_instance(void);
+void disp_port_get_spi_instance(struct port_spi * spi, void * platform_data);
 
 /* defined in disp_backlight_port.c */
 const disp_backlight_t ** disp_port_get_backlight_instance(void);

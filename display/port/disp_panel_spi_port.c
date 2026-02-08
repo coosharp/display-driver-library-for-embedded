@@ -6,8 +6,7 @@
 /*********************
  *      INCLUDES
  *********************/
-#include <stdio.h>
-#include "../panel/interga/panel_com.h"
+#include "./disp_panel_spi_port.h"
 /**********************
  *   STATIC FUNCTIONS
  **********************/
@@ -50,7 +49,7 @@ static int spi_dma_transfer(const struct panel_spi ** self, const void * data, s
 }
 
 
-static const struct panel_spi spi = 
+static const struct panel_spi spi_ops = 
 {
     .select = spi_select,
     .write_command = spi_write_command,
@@ -59,11 +58,11 @@ static const struct panel_spi spi =
     .dma_transfer = spi_dma_transfer,
 };
 
-static const struct panel_spi * spi_instance = &spi;
 
-const panel_spi_t ** disp_port_get_spi_instance(void)
+void disp_port_get_spi_instance(struct port_spi * spi, void * platform_data)
 {
-    return &spi_instance;
+    spi->ops = &spi_ops;
+    spi->platform_data = platform_data;
 }
 
 

@@ -29,6 +29,7 @@ typedef int (* spi_write_data8_fn_t)(const panel_spi_t ** self, const uint8_t * 
 typedef int (* spi_write_data16_fn_t)(const panel_spi_t ** self, const uint16_t * data, size_t size);
 typedef int (* spi_dma_transfer_fn_t)(const panel_spi_t ** self, const void * data, size_t size);
 
+
 struct panel_spi
 {
     spi_select_fn_t select;

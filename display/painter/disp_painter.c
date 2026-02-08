@@ -210,7 +210,6 @@ void disp_painter_draw_ellipse(const struct display * self,
 }
 
 
-
 /******************************* (END OF FILE) *********************************/
 
 

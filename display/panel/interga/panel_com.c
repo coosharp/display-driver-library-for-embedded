@@ -7,27 +7,11 @@
  *      INCLUDES
  *********************/
 #include "./panel_com.h"
-/*********************
- *      MACROS
- *********************/
-
-/**********************
- *   GLOBAL VARIABLES
- **********************/ 
-
-/**********************
- *  STATIC PROTOTYPES
- **********************/
-
-/**********************
- *  STATIC VARIABLES
- **********************/
-
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/ 
 void panel_spi_select(const panel_spi_t ** self, int8_t select)
-{
+{    
     spi_select_fn_t fn = (*self)->select;
     
     if(fn)
