@@ -14,7 +14,8 @@ int main(void)
     disp_backlight_turn_on(&st7735_driver);
     disp_backlight_set_brightness(&st7735_driver, 50);
 
-    disp_painter_fill_point(&st7735_driver, 20, 30, 0xFFFF);
+    disp_painter_set_brush_color(&st7735_driver, 0xFFFF);
+    disp_painter_fill_point(&st7735_driver, 20, 30);
 
     return 0;
 }

@@ -23,26 +23,32 @@ extern "C" {
 /*********************
  *    DECLARATIONS
  *********************/
+struct display_ctx
+{
+    uint32_t brush_color;
+};
+
 struct display
 {
     const struct disp_painter ** painter;
     const struct disp_backlight ** backlight;
+    struct display_ctx ctx;
 };
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
 
 /* defined in disp_painter.c */
+void disp_painter_set_brush_color(struct display * self, 
+                                  uint32_t color);
 void disp_painter_fill_point    (const struct display * self, 
                                  uint16_t x, 
-                                 uint16_t y, 
-                                 uint32_t color);
+                                 uint16_t y);
 void disp_painter_fill_rectangle(const struct display * self, 
                                  uint16_t x, 
                                  uint16_t y, 
                                  uint16_t w, 
-                                 uint16_t h, 
-                                 uint32_t color);
+                                 uint16_t h);
 void disp_painter_flush         (const struct display * self, 
                                  uint16_t x1, 
                                  uint16_t y1, 
