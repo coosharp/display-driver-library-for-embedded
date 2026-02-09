@@ -58,6 +58,21 @@ int panel_spi_dma_transfer(const panel_spi_t ** self, const void * data, size_t 
         return -1;
 }
 
+int panel_prgb_write_mem()
+{
+
+}
+
+int panel_prgb_dma2d_fill_mem()
+{
+
+}
+
+int panel_rgb_dma2d_transfer()
+{
+
+}
+
 /**********************
  *   STATIC FUNCTIONS
  **********************/

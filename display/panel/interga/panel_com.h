@@ -38,6 +38,17 @@ struct panel_spi
     spi_write_data16_fn_t write_data16;
     spi_dma_transfer_fn_t dma_transfer;
 };
+
+
+typedef struct panel_prgb panel_prgb_t;
+
+
+struct panel_prgb
+{
+
+};
+
+
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
