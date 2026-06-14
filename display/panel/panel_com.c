@@ -10,7 +10,7 @@
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/ 
-void panel_spi_select(const panel_spi_t ** self, int8_t select)
+void panel_spi_select(const struct panel_spi ** self, int8_t select)
 {    
     spi_select_fn_t fn = (*self)->select;
     
@@ -18,7 +18,7 @@ void panel_spi_select(const panel_spi_t ** self, int8_t select)
         fn(self, select);
 }
 
-int panel_spi_write_command(const panel_spi_t ** self, const uint8_t * command, size_t size)
+int panel_spi_write_command(const struct panel_spi ** self, const uint8_t * command, size_t size)
 {
     spi_write_command_fn_t fn = (*self)->write_command;
     
@@ -28,7 +28,7 @@ int panel_spi_write_command(const panel_spi_t ** self, const uint8_t * command, 
         return -1;
 }
 
-int panel_spi_write_data8(const panel_spi_t ** self, const uint8_t * data, size_t size)
+int panel_spi_write_data8(const struct panel_spi ** self, const uint8_t * data, size_t size)
 {
     spi_write_data8_fn_t fn = (*self)->write_data8;
     
@@ -38,7 +38,7 @@ int panel_spi_write_data8(const panel_spi_t ** self, const uint8_t * data, size_
         return -1;
 }
 
-int panel_spi_write_data16(const panel_spi_t ** self, const uint16_t * data, size_t size)
+int panel_spi_write_data16(const struct panel_spi ** self, const uint16_t * data, size_t size)
 {
     spi_write_data16_fn_t fn = (*self)->write_data16;
     
@@ -48,7 +48,7 @@ int panel_spi_write_data16(const panel_spi_t ** self, const uint16_t * data, siz
         return -1;
 }
 
-int panel_spi_dma_transfer(const panel_spi_t ** self, const void * data, size_t size)
+int panel_spi_dma_transfer(const struct panel_spi ** self, const void * data, size_t size)
 {
     spi_dma_transfer_fn_t fn = (*self)->dma_transfer;
     

@@ -10,7 +10,7 @@
 /**********************
  *   STATIC VARIABLES
  **********************/ 
-static const struct disp_painter st7735_painter = 
+static const struct disp_painter painter_driver = 
 {
     .fill_point = st7735_fill_point,
 };

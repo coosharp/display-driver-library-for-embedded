@@ -52,11 +52,11 @@ struct panel_prgb
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
-void panel_spi_select(const panel_spi_t ** self, int8_t select);
-int panel_spi_write_command(const panel_spi_t ** self, const uint8_t * command, size_t size);
-int panel_spi_write_data8(const panel_spi_t ** self, const uint8_t * data, size_t size);
-int panel_spi_write_data16(const panel_spi_t ** self, const uint16_t * data, size_t size);
-int panel_spi_dma_transfer(const panel_spi_t ** self, const void * data, size_t size);
+void panel_spi_select(const struct panel_spi ** self, int8_t select);
+int panel_spi_write_command(const struct panel_spi ** self, const uint8_t * command, size_t size);
+int panel_spi_write_data8(const struct panel_spi ** self, const uint8_t * data, size_t size);
+int panel_spi_write_data16(const struct panel_spi ** self, const uint16_t * data, size_t size);
+int panel_spi_dma_transfer(const struct panel_spi ** self, const void * data, size_t size);
 
  
 

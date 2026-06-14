@@ -1,10 +1,10 @@
 /**
- * @file disp_panel_spi_port.h
+ * @file display_factory.h
  *
  */
   
-#ifndef _DISP_PANEL_SPI_PORT_H
-#define _DISP_PANEL_SPI_PORT_H
+#ifndef _DISPLAY_FACTORY_H
+#define _DISPLAY_FACTORY_H
 
 
 #ifdef __cplusplus
@@ -14,8 +14,7 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include <stdio.h>
-#include "../panel/interga/panel_com.h"
+
 /*********************
  *      MACROS
  *********************/
@@ -23,11 +22,16 @@ extern "C" {
 /*********************
  *    DECLARATIONS
  *********************/
-struct port_spi
+typedef enum
 {
-    const struct panel_spi * ops;
-    void * platform_data;
-};
+    DISPLAY_PANEL_ST7735 = 0,
+    DISPLAY_PANEL_ST7789,
+    DISPLAY_PANEL_ILI9341,
+
+    DISPLAY_PANEL_SIMPLE,
+
+    DISPLAY_PANEL_MAX,
+} display_panel_type_t;
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
@@ -38,9 +42,12 @@ struct port_spi
 }
 #endif
 
-#endif /*_DISP_PANEL_SPI_PORT_H*/
+#endif /*_DISPLAY_FACTORY_H*/
 
 
 /******************************* (END OF FILE) *********************************/
+
+
+
 
 
