@@ -28,7 +28,7 @@ typedef int (* spi_write_command_fn_t)(const panel_spi_t ** self, const uint8_t 
 typedef int (* spi_write_data8_fn_t)(const panel_spi_t ** self, const uint8_t * data, size_t size);
 typedef int (* spi_write_data16_fn_t)(const panel_spi_t ** self, const uint16_t * data, size_t size);
 typedef int (* spi_dma_transfer_fn_t)(const panel_spi_t ** self, const void * data, size_t size);
-
+typedef void (* spi_delay_ms_fn_t)(uint32_t ms);
 
 struct panel_spi
 {
@@ -37,6 +37,7 @@ struct panel_spi
     spi_write_data8_fn_t write_data8;
     spi_write_data16_fn_t write_data16;
     spi_dma_transfer_fn_t dma_transfer;
+    spi_delay_ms_fn_t delay_ms;
 };
 
 
@@ -57,8 +58,9 @@ int panel_spi_write_command(const struct panel_spi ** self, const uint8_t * comm
 int panel_spi_write_data8(const struct panel_spi ** self, const uint8_t * data, size_t size);
 int panel_spi_write_data16(const struct panel_spi ** self, const uint16_t * data, size_t size);
 int panel_spi_dma_transfer(const struct panel_spi ** self, const void * data, size_t size);
-
+void panel_spi_delay_ms(const struct panel_spi ** self, uint32_t ms);
  
+
 
 #ifdef __cplusplus
 }

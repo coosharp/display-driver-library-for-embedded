@@ -14,8 +14,8 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../../painter/disp_painter.h"
-#include "./panel_com.h"
+#include "../core/display.h"
+#include "panel_com.h"
 /**********************
  *      MACROS
  **********************/
@@ -89,7 +89,7 @@ extern "C" {
  *********************/
 struct st7735
 {
-    const struct disp_painter * painter;
+    const struct display_painter * painter;
     const struct panel_spi ** spi;
 };
 /**********************
@@ -97,10 +97,6 @@ struct st7735
  **********************/
 void st7735_register(struct st7735 * self, const struct panel_spi ** spi);
 
-void st7735_fill_point(const struct disp_painter ** painter, 
-                       uint16_t x, 
-                       uint16_t y, 
-                       uint32_t color);
 
 #ifdef __cplusplus
 }

@@ -58,6 +58,14 @@ int panel_spi_dma_transfer(const struct panel_spi ** self, const void * data, si
         return -1;
 }
 
+void panel_spi_delay_ms(const struct panel_spi ** self, uint32_t ms)
+{
+    spi_delay_ms_fn_t fn = (*self)->delay_ms;
+    
+    if(fn)
+        fn(ms);
+}
+
 int panel_prgb_write_mem()
 {
 
