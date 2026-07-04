@@ -19,7 +19,7 @@ target_link_libraries(display_test display_driver)
 target_include_directories(display_test PRIVATE
     ${CMAKE_SOURCE_DIR}/display
     ${CMAKE_SOURCE_DIR}/display/backlight
-    ${CMAKE_SOURCE_DIR}/display/painter
     ${CMAKE_SOURCE_DIR}/display/panel
-    ${CMAKE_SOURCE_DIR}/display/panel/interga
+    ${CMAKE_SOURCE_DIR}/display/common
+    ${CMAKE_SOURCE_DIR}/display/porting
 )

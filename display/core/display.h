@@ -62,10 +62,7 @@ struct display_backlight
 
 struct display_context
 {
-    uint32_t height;
-    uint32_t width;
     uint32_t color;
-    uint8_t  pixel_format;
 };
     
 struct display

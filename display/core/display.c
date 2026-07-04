@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "display.h"
-#include "./common/display_log.h"
+#include "display_log.h"
 /*********************
  *      MACROS
  *********************/
@@ -37,6 +37,8 @@ void display_register_instance(struct display * self,
 {
     self->painter = painter;
     self->backlight = backlight;
+
+    LOG_TRACE_DISPLAY("");
 }
 
 
@@ -48,11 +50,16 @@ void display_fill_point(const struct display * self,
                         uint16_t y)
 {
     fill_point_fn_t fn = (*self->painter)->fill_point;
-    uint32_t color = self->context.color;
-    if(fn)
-        fn(self->painter, x, y, color);
 
-    LOG_INFO_DISPLAY("Filled point at (%d, %d) with color 0x%X", x, y, color);
+    uint32_t color = self->context.color;
+
+    if(fn) {
+        LOG_INFO_DISPLAY("Filled point at (%d, %d) with color 0x%X", x, y, color);
+        fn(self->painter, x, y, color);
+    }
+    else {
+        LOG_WARN_DISPLAY("Fill point function not implemented!");
+    }
 }
 
 void display_fill_rectangle(const struct display * self, 
@@ -62,11 +69,16 @@ void display_fill_rectangle(const struct display * self,
                              uint16_t h)
 {
     fill_rectangle_fn_t fn = (*self->painter)->fill_rectangle;
-    uint32_t color = self->context.color;
-    if(fn)
-        fn(self->painter, x, y, w, h, color);
 
-    LOG_INFO_DISPLAY("Filled rectangle at (%d, %d) with width %d and height %d with color 0x%X", x, y, w, h, color);
+    uint32_t color = self->context.color;
+
+    if(fn) {
+        LOG_INFO_DISPLAY("Filled rectangle at (%d, %d) with width %d and height %d with color 0x%X", x, y, w, h, color);
+        fn(self->painter, x, y, w, h, color);
+    }
+    else {
+        LOG_WARN_DISPLAY("Fill rectangle function not implemented!");
+    }    
 }
 
 void display_flush(const struct display * self, 
@@ -78,10 +90,13 @@ void display_flush(const struct display * self,
 {
     flush_fn_t fn = (*self->painter)->flush;
     
-    if(fn)
+    if(fn) {
+        LOG_INFO_DISPLAY("Flushed area from (%d, %d) to (%d, %d)", x1, y1, x2, y2);
         fn(self->painter, x1, y1, x2, y2, data);
-
-    LOG_INFO_DISPLAY("Flushed area from (%d, %d) to (%d, %d)", x1, y1, x2, y2);
+    }
+    else {
+        LOG_WARN_DISPLAY("Flush function not implemented!");
+    }
 }
 
 void display_set_color(struct display * self, 
@@ -263,26 +278,38 @@ void display_enable_backlight(const struct display * self)
 {
     enable_backlight_fn_t fn = (*self->backlight)->enable_backlight;
 
-    if(fn)
+    if(fn) {
         fn(self->backlight);
+    }
+    else {
+        LOG_WARN_DISPLAY("Enable backlight function not implemented!");
+    }
+        
 }
 
 void display_disable_backlight(const struct display * self)
 {
     disable_backlight_fn_t fn = (*self->backlight)->disable_backlight;
 
-    if(fn)
+    if(fn) {
         fn(self->backlight);
+    }
+    else {
+        LOG_WARN_DISPLAY("Disable backlight function not implemented!");
+    }
 }
 
 void display_set_backlight_brightness(const struct display * self, uint8_t brightness)
 {
     set_backlight_brightness_fn_t fn = (*self->backlight)->set_backlight_brightness;
 
-    if(fn)
+    if(fn) {
+        LOG_INFO_DISPLAY("Set backlight brightness to %d", brightness);
         fn(self->backlight, brightness);
-
-    LOG_INFO_DISPLAY("Set backlight brightness to %d", brightness);
+    }
+    else {
+        LOG_WARN_DISPLAY("Set backlight brightness function not implemented!");
+    }
 }
 
 

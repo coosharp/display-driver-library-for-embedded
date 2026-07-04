@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "display_port_backlight.h"
-#include "common/display_log.h"
+#include "display_log.h"
 
 /**********************
  *   STATIC FUNCTIONS
@@ -41,9 +41,7 @@ static void set_pwm_duty(const struct backlight_ctrl ** ctrl, uint8_t brightness
 
 static const struct backlight_ctrl ctrl = 
 {
-    .gpio_set_level = set_gpio_level,
-    .gpio_clear_level = clear_gpio_level,
-    .pwm_set_duty = set_pwm_duty,
+    NULL
 };
 
 
@@ -51,6 +49,8 @@ void display_port_backlight_register(struct display_port_backlight * self, void 
 {
     self->ctrl = &ctrl;
     self->platform_data = platform_data;
+
+    LOG_TRACE_DISPLAY("");
 }
 
 /******************************* (END OF FILE) *********************************/

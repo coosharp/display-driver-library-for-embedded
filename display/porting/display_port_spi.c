@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "display_port_spi.h"
-#include "common/display_log.h"
+#include "display_log.h"
 /**********************
  *   STATIC FUNCTIONS
  **********************/
@@ -20,9 +20,9 @@ static void spi_select(const struct panel_spi ** spi, int8_t cs)
     LOG_TRACE_DISPLAY("SPI select: %d", cs);
 }
 
-static int spi_write_command(const struct panel_spi ** self, const uint8_t * command, size_t size)
+static int spi_write_command(const struct panel_spi ** spi, const uint8_t * command, size_t size)
 {
-    const struct display_port_spi * self = (const struct display_port_spi *)self;
+    const struct display_port_spi * self = (const struct display_port_spi *)spi;
 
     (void)self;
     (void)size;
@@ -32,9 +32,9 @@ static int spi_write_command(const struct panel_spi ** self, const uint8_t * com
     return 0;
 }
 
-static int spi_write_data8(const struct panel_spi ** self, const uint8_t * data, size_t size)
+static int spi_write_data8(const struct panel_spi ** spi, const uint8_t * data, size_t size)
 {
-    const struct display_port_spi * self = (const struct display_port_spi *)self;
+    const struct display_port_spi * self = (const struct display_port_spi *)spi;
 
     (void)self;
     (void)size;
@@ -44,9 +44,9 @@ static int spi_write_data8(const struct panel_spi ** self, const uint8_t * data,
     return 0;
 }
 
-static int spi_write_data16(const struct panel_spi ** self, const uint16_t * data, size_t size)
+static int spi_write_data16(const struct panel_spi ** spi, const uint16_t * data, size_t size)
 {
-    const struct display_port_spi * self = (const struct display_port_spi *)self;
+    const struct display_port_spi * self = (const struct display_port_spi *)spi;
 
     (void)self;
     (void)size;
@@ -56,11 +56,12 @@ static int spi_write_data16(const struct panel_spi ** self, const uint16_t * dat
     return 0;
 }
 
-static int spi_dma_transfer(const struct panel_spi ** self, const void * data, size_t size)
+static int spi_dma_transfer(const struct panel_spi ** spi, const void * data, size_t size)
 {
-    const struct display_port_spi * self = (const struct display_port_spi *)self;
+    const struct display_port_spi * self = (const struct display_port_spi *)spi;
 
     (void)self;
+    (void)data;
     (void)size;
 
     LOG_TRACE_DISPLAY("SPI DMA transfer: %zu bytes", size);
@@ -83,6 +84,8 @@ void display_port_spi_register(struct display_port_spi * self, void * platform_d
 {
     self->spi = &spi;
     self->platform_data = platform_data;
+
+    LOG_TRACE_DISPLAY("Display port SPI registered successfully!");
 }
 
 

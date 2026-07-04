@@ -14,7 +14,6 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../display.h"
 #include "backlight_ctrl.h"
 /*********************
  *      MACROS

@@ -6,15 +6,7 @@
 /*********************
  *      INCLUDES
  *********************/
-#include "display_factory.h"
-#include "display.h"
-#include "panel/panel_st7735.h"
-#include "panel/panel_com.h"
-#include "backlight/backlight.h"
-#include "backlight/backlight_ctrl.h"
 
-#include "porting/display_port_spi.h"
-#include "porting/display_port_backlight.h"
 /*********************
  *      MACROS
  *********************/
@@ -34,6 +26,7 @@
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/ 
+#if 0
 const struct display_painter ** 
 display_get_painter_instance(display_panel_type_t panel)
 {
@@ -43,11 +36,10 @@ display_get_painter_instance(display_panel_type_t panel)
 
         case DISPLAY_PANEL_ST7735: 
         {
-            static struct st7735 st7735_instance;
-            static struct panel_spi st7735_spi_instance;
 
 
-            st7735_register(&st7735_instance, &st7735_spi_instance);
+
+            
 
             return &st7735_instance.painter;
         }
@@ -66,6 +58,7 @@ display_get_backlight_instance(void)
 
     return &backlight_instance.backlight;
 }
+    #endif
 /**********************
  *   STATIC FUNCTIONS
  **********************/

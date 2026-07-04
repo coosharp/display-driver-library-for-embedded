@@ -7,6 +7,7 @@
  *      INCLUDES
  *********************/
 #include "backlight.h"
+#include "display.h"
 /*********************
  *      MACROS
  *********************/
@@ -24,9 +25,7 @@
  **********************/
 static const struct display_backlight backlight_driver = 
 {
-    .enable_backlight = backlight_enable,
-    .disable_backlight = backlight_disable,
-    .set_backlight_brightness = backlight_set_brightness,
+    NULL
 };
 
 /**********************

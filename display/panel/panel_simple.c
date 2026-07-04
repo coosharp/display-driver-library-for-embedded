@@ -2,7 +2,7 @@
  * @file panel_simple.c
  *
  */
-  
+#if 0
 /*********************
  *      INCLUDES
  *********************/
@@ -68,7 +68,7 @@ void simple_panel_flush(const struct disp_painter ** painter,
 {
 
 }
-
+#endif
 /**********************
  *   STATIC FUNCTIONS
  **********************/

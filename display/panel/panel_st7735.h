@@ -14,8 +14,37 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../core/display.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include "display.h"
 #include "panel_com.h"
+/**********************
+ *      DEFINES
+ **********************/
+
+/*********************
+ *    DECLARATIONS
+ *********************/
+struct st7735_context
+{
+    uint32_t height;
+    uint32_t width;
+    uint16_t  rotation;
+    char color_mode[7];
+};
+
+struct st7735
+{
+    const struct display_painter * painter;
+    const struct panel_spi ** spi;
+    struct st7735_context context;
+};
+/**********************
+*  GLOBAL PROTOTYPES
+ **********************/
+void st7735_register(struct st7735 * self, 
+                     const struct panel_spi ** spi,
+                     const struct st7735_context * context);
 /**********************
  *      MACROS
  **********************/
@@ -83,19 +112,6 @@ extern "C" {
 #define ST7735_ORIENTATION_PORTRAIT_ROT180  0xC0U /* Portrait rotated 180� orientation choice of LCD screen  */
 #define ST7735_ORIENTATION_LANDSCAPE        0x70U /* Landscape orientation choice of LCD screen              */
 #define ST7735_ORIENTATION_LANDSCAPE_ROT180 0xA0U /* Landscape rotated 180� orientation choice of LCD screen */
-
-/*********************
- *    DECLARATIONS
- *********************/
-struct st7735
-{
-    const struct display_painter * painter;
-    const struct panel_spi ** spi;
-};
-/**********************
-*  GLOBAL PROTOTYPES
- **********************/
-void st7735_register(struct st7735 * self, const struct panel_spi ** spi);
 
 
 #ifdef __cplusplus

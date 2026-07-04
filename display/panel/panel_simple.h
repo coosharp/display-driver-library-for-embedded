@@ -6,7 +6,7 @@
 #ifndef _PANEL_SIMPLE_H
 #define _PANEL_SIMPLE_H
 
-
+#if 0
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,7 +32,7 @@ struct simple_panel
 *  GLOBAL PROTOTYPES
  **********************/
 
- 
+ #endif
 
 #ifdef __cplusplus
 }

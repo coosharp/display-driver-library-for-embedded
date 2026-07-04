@@ -14,7 +14,7 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "panel/panel_com.h"
+#include "panel_com.h"
 /*********************
  *      MACROS
  *********************/
