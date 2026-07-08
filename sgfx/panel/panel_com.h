@@ -44,7 +44,7 @@ struct panel_spi
 typedef struct panel_prgb panel_prgb_t;
 
 
-struct panel_prgb
+struct panel_rgb
 {
 
 };

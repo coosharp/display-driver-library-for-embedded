@@ -1,1 +1,1 @@
-# display-driver-library-for-embedded
+# Simple Graphics Framework

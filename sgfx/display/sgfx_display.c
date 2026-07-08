@@ -32,30 +32,30 @@
 *      Register
 *--------------------*/
 void display_register_instance(struct display * self, 
-                               const struct display_painter ** painter, 
+                               const struct display_drawing ** drawing, 
                                const struct display_backlight ** backlight)
 {
-    self->painter = painter;
+    self->drawing = drawing;
     self->backlight = backlight;
 
-    LOG_TRACE_DISPLAY("");
+    LOG_INFO_DISPLAY("Display instance registered with drawing and backlight");
 }
 
 
 /*---------------------
- *      Painter
+ *      Drawing
  *--------------------*/
 void display_fill_point(const struct display * self, 
                         uint16_t x, 
                         uint16_t y)
 {
-    fill_point_fn_t fn = (*self->painter)->fill_point;
+    fill_point_fn_t fn = (*self->drawing)->fill_point;
 
     uint32_t color = self->context.color;
 
     if(fn) {
         LOG_INFO_DISPLAY("Filled point at (%d, %d) with color 0x%X", x, y, color);
-        fn(self->painter, x, y, color);
+        fn(self->drawing, x, y, color);
     }
     else {
         LOG_WARN_DISPLAY("Fill point function not implemented!");
@@ -68,13 +68,13 @@ void display_fill_rectangle(const struct display * self,
                              uint16_t w, 
                              uint16_t h)
 {
-    fill_rectangle_fn_t fn = (*self->painter)->fill_rectangle;
+    fill_rectangle_fn_t fn = (*self->drawing)->fill_rectangle;
 
     uint32_t color = self->context.color;
 
     if(fn) {
         LOG_INFO_DISPLAY("Filled rectangle at (%d, %d) with width %d and height %d with color 0x%X", x, y, w, h, color);
-        fn(self->painter, x, y, w, h, color);
+        fn(self->drawing, x, y, w, h, color);
     }
     else {
         LOG_WARN_DISPLAY("Fill rectangle function not implemented!");
@@ -88,11 +88,11 @@ void display_flush(const struct display * self,
                    uint16_t y2, 
                    const void * data)
 {
-    flush_fn_t fn = (*self->painter)->flush;
+    flush_fn_t fn = (*self->drawing)->flush;
     
     if(fn) {
         LOG_INFO_DISPLAY("Flushed area from (%d, %d) to (%d, %d)", x1, y1, x2, y2);
-        fn(self->painter, x1, y1, x2, y2, data);
+        fn(self->drawing, x1, y1, x2, y2, data);
     }
     else {
         LOG_WARN_DISPLAY("Flush function not implemented!");
@@ -199,6 +199,8 @@ void display_draw_circle(const struct display * self,
                           uint16_t y,
                           uint16_t r)
 {
+    LOG_TRACE_DISPLAY("Begin!");
+
     int x_add = -r, yadd = 0, err = 2 - 2 * r, e2;
     do {   
         display_fill_point(self, x - x_add, y + yadd);
@@ -214,6 +216,8 @@ void display_draw_circle(const struct display * self,
         if (e2 > x_add) err += ++x_add * 2 + 1;
     }
     while (x_add <= 0);
+
+    LOG_TRACE_DISPLAY("End!");
 }
 
 void display_draw_ellipse(const struct display * self,
@@ -222,6 +226,8 @@ void display_draw_ellipse(const struct display * self,
                                uint16_t rx,
                                uint16_t ry)
 {
+    LOG_TRACE_DISPLAY("Begin!");
+
     int32_t x_add = -rx, y_add = 0, err = 2 - 2 * rx, e2;
     float K = 0, rad1 = 0, rad2 = 0;
 
@@ -268,39 +274,73 @@ void display_draw_ellipse(const struct display * self,
         }
         while (y_add <= 0);
     }
+
+    LOG_TRACE_DISPLAY("End!");
 }
 
+int display_ioctrl(const struct display * self, uint32_t command, void * arg)
+{
+    LOG_TRACE_DISPLAY("Begin!");
+
+    int result = -1;
+
+    ioctrl_fn_t fn = (*self->drawing)->ioctrl;
+
+    LOG_INFO_DISPLAY("Performing ioctrl command: %d", command);
+
+    if(fn) {
+        result = fn(self->drawing, command, arg);
+    }
+    else {
+        LOG_WARN_DISPLAY("Drawing ioctrl function not implemented!");
+    }
+
+    LOG_TRACE_DISPLAY("End!");
+
+    return result;
+}
 
 /*---------------------
  *      Backlight
  *--------------------*/
-void display_enable_backlight(const struct display * self)
+void display_set_backlight_state(const struct display * self, uint8_t state)
 {
-    enable_backlight_fn_t fn = (*self->backlight)->enable_backlight;
+    LOG_TRACE_DISPLAY("Begin!");
+
+    set_backlight_state_fn_t fn = (*self->backlight)->set_backlight_state;
 
     if(fn) {
-        fn(self->backlight);
+        LOG_INFO_DISPLAY("Set backlight state to %d", state);
+        fn(self->backlight, state);
     }
     else {
-        LOG_WARN_DISPLAY("Enable backlight function not implemented!");
+        LOG_WARN_DISPLAY("Set backlight state function not implemented!");
     }
-        
+
+    LOG_TRACE_DISPLAY("End!");
 }
 
-void display_disable_backlight(const struct display * self)
+void display_get_backlight_state(const struct display * self, uint8_t * state)
 {
-    disable_backlight_fn_t fn = (*self->backlight)->disable_backlight;
+    LOG_TRACE_DISPLAY("Begin!");
+
+    get_backlight_state_fn_t fn = (*self->backlight)->get_backlight_state;
 
     if(fn) {
-        fn(self->backlight);
+        fn(self->backlight, state);
+        LOG_INFO_DISPLAY("Got backlight state: %d", *state);
     }
     else {
-        LOG_WARN_DISPLAY("Disable backlight function not implemented!");
+        LOG_WARN_DISPLAY("Get backlight state function not implemented!");
     }
+
+    LOG_TRACE_DISPLAY("End!");
 }
 
 void display_set_backlight_brightness(const struct display * self, uint8_t brightness)
 {
+    LOG_TRACE_DISPLAY("Begin!");
+
     set_backlight_brightness_fn_t fn = (*self->backlight)->set_backlight_brightness;
 
     if(fn) {
@@ -310,6 +350,25 @@ void display_set_backlight_brightness(const struct display * self, uint8_t brigh
     else {
         LOG_WARN_DISPLAY("Set backlight brightness function not implemented!");
     }
+
+    LOG_TRACE_DISPLAY("End!");
+}
+
+void display_get_backlight_brightness(const struct display * self, uint8_t * brightness)
+{
+    LOG_TRACE_DISPLAY("Begin!");
+
+    get_backlight_brightness_fn_t fn = (*self->backlight)->get_backlight_brightness;
+
+    if(fn) {
+        fn(self->backlight, brightness);
+        LOG_INFO_DISPLAY("Got backlight brightness: %d", *brightness);
+    }
+    else {
+        LOG_WARN_DISPLAY("Get backlight brightness function not implemented!");
+    }
+
+    LOG_TRACE_DISPLAY("End!");
 }
 
 

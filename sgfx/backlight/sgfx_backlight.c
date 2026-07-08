@@ -35,6 +35,7 @@ void backlight_register(struct backlight * self, const struct backlight_ctrl ** 
 {
     self->backlight = &backlight_driver;
     self->ctrl = ctrl;
+    self->brightness = 0;
 }
 
 void backlight_enable(const struct display_backlight ** backlight)
@@ -54,9 +55,18 @@ void backlight_disable(const struct display_backlight ** backlight)
 void backlight_set_brightness(const struct display_backlight ** backlight, uint8_t brightness)
 {
     const struct backlight * self = (const struct backlight *)backlight;
+    self->brightness = brightness;
 
     backlight_pwm_set_duty(self->ctrl, brightness);
 }
+
+void backlight_get_brightness(const struct display_backlight ** backlight, uint8_t * brightness)
+{
+    const struct backlight * self = (const struct backlight *)backlight;
+
+    *brightness = self->brightness;
+}
+
 /**********************
  *   STATIC FUNCTIONS
  **********************/

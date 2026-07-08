@@ -19,7 +19,7 @@ extern "C" {
 /*********************
  *      MACROS
  *********************/
-
+z
 
 #if LOG_ENABLE_DISPLAY_COLOR
     #define LOG_COLOR_RED     "\033[31m"

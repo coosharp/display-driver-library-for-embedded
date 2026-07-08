@@ -26,6 +26,7 @@ struct backlight
 {
     const struct display_backlight * backlight;
     const struct backlight_ctrl ** ctrl;
+    uint8_t brightness;
 };
 /**********************
 *  GLOBAL PROTOTYPES

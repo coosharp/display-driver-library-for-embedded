@@ -1,12 +1,12 @@
 /**
- * @file panel_simple.h
+ * @file display_config.h
  *
  */
   
-#ifndef _PANEL_SIMPLE_H
-#define _PANEL_SIMPLE_H
+#ifndef _DISPLAY_CONFIG_H
+#define _DISPLAY_CONFIG_H
 
-#if 0
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -14,31 +14,28 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../../painter/disp_painter.h"
-#include "panel_com.h"
+
 /*********************
- *      MACROS
+ *      DEFINES
  *********************/
+#define LOG_ENABLE_DISPLAY          (1)
+#define LOG_ENABLE_DISPLAY_COLOR    (1)
 
 /*********************
  *    DECLARATIONS
  *********************/
-struct simple_panel 
-{
-    const struct disp_painter * painter;
-    const struct panel_prgb ** prgb;
-};
+
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
 
- #endif
+ 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*_PANEL_SIMPLE_H*/
+#endif /*_DISPLAY_CONFIG_H*/
 
 
 /******************************* (END OF FILE) *********************************/

@@ -97,7 +97,7 @@ int panel_prgb_dma2d_fill_mem()
 
 }
 
-int panel_rgb_dma2d_transfer()
+int panel_prgb_dma2d_transfer()
 {
 
 }

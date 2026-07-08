@@ -15,23 +15,12 @@ endif()
 # 包含目录
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/display/core
-    ${CMAKE_CURRENT_SOURCE_DIR}/display/backlight
-    ${CMAKE_CURRENT_SOURCE_DIR}/display/panel
-    ${CMAKE_CURRENT_SOURCE_DIR}/display/porting
     ${CMAKE_CURRENT_SOURCE_DIR}/display/common
 )
 
 # 创建显示驱动库
 add_library(display_driver STATIC
-    display/backlight/backlight.c
-    display/backlight/backlight_ctrl.c
     display/core/display.c
-    display/core/display_factory.c
-    display/panel/panel_com.c
-    display/panel/panel_simple.c
-    display/panel/panel_st7735.c
-    display/porting/display_port_backlight.c
-    display/porting/display_port_spi.c
 )
 
 # 设置库的属性

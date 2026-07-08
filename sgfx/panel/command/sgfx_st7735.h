@@ -1,10 +1,10 @@
 /**
- * @file display_factory.h
+ * @file templ.h
  *
  */
   
-#ifndef _DISPLAY_FACTORY_H
-#define _DISPLAY_FACTORY_H
+#ifndef _TEMPLATE_H
+#define _TEMPLATE_H
 
 
 #ifdef __cplusplus
@@ -22,16 +22,7 @@ extern "C" {
 /*********************
  *    DECLARATIONS
  *********************/
-typedef enum
-{
-    DISPLAY_PANEL_ST7735 = 0,
-    DISPLAY_PANEL_ST7789,
-    DISPLAY_PANEL_ILI9341,
 
-    DISPLAY_PANEL_SIMPLE,
-
-    DISPLAY_PANEL_MAX,
-} display_panel_type_t;
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
@@ -42,12 +33,9 @@ typedef enum
 }
 #endif
 
-#endif /*_DISPLAY_FACTORY_H*/
+#endif /*_TEMPLATE_H*/
 
 
 /******************************* (END OF FILE) *********************************/
-
-
-
 
 

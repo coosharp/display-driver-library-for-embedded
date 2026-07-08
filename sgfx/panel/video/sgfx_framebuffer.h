@@ -1,10 +1,10 @@
 /**
- * @file display_config.h
+ * @file panel_framebuffer.h
  *
  */
   
-#ifndef _DISPLAY_CONFIG_H
-#define _DISPLAY_CONFIG_H
+#ifndef _PANEL_FRAMEBUFFER_H
+#define _PANEL_FRAMEBUFFER_H
 
 
 #ifdef __cplusplus
@@ -14,27 +14,31 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-
+#include "display.h"
+#include "panel_com.h"
 /*********************
- *      DEFINES
+ *      MACROS
  *********************/
-#define LOG_ENABLE_DISPLAY          (1)
-#define LOG_ENABLE_DISPLAY_COLOR    (1)
+
 /*********************
  *    DECLARATIONS
  *********************/
-
+struct framebuffer 
+{  
+    const struct display_painter * painter;
+    const struct panel_prgb ** prgb;
+};
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
 
- 
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*_DISPLAY_CONFIG_H*/
+#endif /*_PANEL_FRAMEBUFFER_H*/
 
 
 /******************************* (END OF FILE) *********************************/
