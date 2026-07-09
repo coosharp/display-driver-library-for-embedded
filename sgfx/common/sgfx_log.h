@@ -14,42 +14,53 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include <stdio.h>
-#include "display_config.h"
+#include "sgfx_config.h"
 /*********************
  *      MACROS
  *********************/
-z
 
-#if LOG_ENABLE_DISPLAY_COLOR
-    #define LOG_COLOR_RED     "\033[31m"
-    #define LOG_COLOR_GREEN   "\033[32m"
-    #define LOG_COLOR_YELLOW  "\033[33m"
-    #define LOG_COLOR_BLUE    "\033[34m"
-    #define LOG_COLOR_WHITE   "\033[37m"
-    #define LOG_COLOR_RESET   "\033[0m"
+
+#if SGFX_LOG_COLOR_ENABLE
+    #define SGFX_LOG_COLOR_RED     "\033[31m"
+    #define SGFX_LOG_COLOR_GREEN   "\033[32m"
+    #define SGFX_LOG_COLOR_YELLOW  "\033[33m"
+    #define SGFX_LOG_COLOR_BLUE    "\033[34m"
+    #define SGFX_LOG_COLOR_WHITE   "\033[37m"
+    #define SGFX_LOG_COLOR_RESET   "\033[0m"
 #else 
-    #define LOG_COLOR_RED     ""
-    #define LOG_COLOR_GREEN   ""
-    #define LOG_COLOR_YELLOW  ""
-    #define LOG_COLOR_BLUE    ""
-    #define LOG_COLOR_WHITE   ""
-    #define LOG_COLOR_RESET   ""
-#endif /* LOG_ENABLE_DISPLAY_COLOR */
+    #define SGFX_LOG_COLOR_RED     ""
+    #define SGFX_LOG_COLOR_GREEN   ""
+    #define SGFX_LOG_COLOR_YELLOW  ""
+    #define SGFX_LOG_COLOR_BLUE    ""
+    #define SGFX_LOG_COLOR_WHITE   ""
+    #define SGFX_LOG_COLOR_RESET   ""
+#endif /* SGFX_LOG_COLOR_ENABLE */
 
-#if LOG_ENABLE_DISPLAY
-    #define LOG_PRINTF_DISPLAY(fmt, ...)  do{ printf(fmt, ##__VA_ARGS__); } while(0)
-    #define LOG_TRACE_DISPLAY(fmt, ...)  LOG_PRINTF_DISPLAY(LOG_COLOR_GREEN"[Trace] [%s:%d] " fmt LOG_COLOR_RESET"\r\n", __FUNCTION__, __LINE__, ##__VA_ARGS__)
-    #define LOG_INFO_DISPLAY(fmt, ...)   LOG_PRINTF_DISPLAY(LOG_COLOR_BLUE"[Info ] [%s:%d] " fmt LOG_COLOR_RESET"\r\n", __FUNCTION__, __LINE__, ##__VA_ARGS__)
-    #define LOG_WARN_DISPLAY(fmt, ...)   LOG_PRINTF_DISPLAY(LOG_COLOR_YELLOW"[Warn ] [%s:%d] " fmt LOG_COLOR_RESET"\r\n", __FUNCTION__, __LINE__, ##__VA_ARGS__)
-    #define LOG_ERROR_DISPLAY(fmt, ...)  LOG_PRINTF_DISPLAY(LOG_COLOR_RED"[Error] [%s:%d] " fmt LOG_COLOR_RESET"\r\n", __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#if SGFX_LOG_ENABLE
+    #define SGFX_LOG_WRITE(fmt, ...)  do{ SGFX_LOG_PRINTF(fmt, ##__VA_ARGS__); } while(0)
+
+    #define SGFX_LOG_TRACE(fmt, ...)  SGFX_LOG_WRITE(SGFX_LOG_COLOR_GREEN"[Trace] [%s:%d] " \
+                                                      fmt SGFX_LOG_COLOR_RESET"\r\n", \
+                                                      __FUNCTION__, __LINE__, ##__VA_ARGS__)
+
+    #define SGFX_LOG_INFO(fmt, ...)   SGFX_LOG_WRITE(SGFX_LOG_COLOR_BLUE"[Info ] [%s:%d] " \
+                                                      fmt SGFX_LOG_COLOR_RESET"\r\n", \
+                                                      __FUNCTION__, __LINE__, ##__VA_ARGS__)
+
+    #define SGFX_LOG_WARN(fmt, ...)   SGFX_LOG_WRITE(SGFX_LOG_COLOR_YELLOW"[Warn ] [%s:%d] " \
+                                                      fmt SGFX_LOG_COLOR_RESET"\r\n", \
+                                                      __FUNCTION__, __LINE__, ##__VA_ARGS__)
+
+    #define SGFX_LOG_ERROR(fmt, ...)  SGFX_LOG_WRITE(SGFX_LOG_COLOR_RED"[Error] [%s:%d] " \
+                                                      fmt SGFX_LOG_COLOR_RESET"\r\n", \
+                                                      __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #else
-    #define LOG_PRINTF_DISPLAY(fmt, ...)  do{} while(0)
-    #define LOG_TRACE_DISPLAY(fmt, ...)  do{} while(0)
-    #define LOG_INFO_DISPLAY(fmt, ...)   do{} while(0)
-    #define LOG_WARN_DISPLAY(fmt, ...)   do{} while(0)
-    #define LOG_ERROR_DISPLAY(fmt, ...)  do{} while(0)
-#endif /* LOG_ENABLE_DISPLAY */
+    #define SGFX_LOG_WRITE(fmt, ...)  do{} while(0)
+    #define SGFX_LOG_TRACE(fmt, ...)  do{} while(0)
+    #define SGFX_LOG_INFO(fmt, ...)   do{} while(0)
+    #define SGFX_LOG_WARN(fmt, ...)   do{} while(0)
+    #define SGFX_LOG_ERROR(fmt, ...)  do{} while(0)
+#endif /* SGFX_LOG_ENABLE */
 
 /*********************
  *    DECLARATIONS

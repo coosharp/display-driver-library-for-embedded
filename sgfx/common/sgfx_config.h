@@ -14,12 +14,26 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-
+#include <stdio.h>
 /*********************
  *      DEFINES
  *********************/
-#define LOG_ENABLE_DISPLAY          (1)
-#define LOG_ENABLE_DISPLAY_COLOR    (1)
+#define SGFX_LOG_ENABLE          (1)
+#define SGFX_LOG_COLOR_ENABLE    (1)
+
+#define SGFX_LOG_DISPLAY_ENABLE  (1)
+
+#define SGFX_LOG_ST7735_ENABLE
+
+#define SGFX_LOG_ST7789_ENABLE
+
+#define SGFX_LOG_ST7796_ENABLE
+
+#if SGFX_LOG_ENABLE
+    #define    SGFX_LOG_PRINTF    printf
+#else
+    #define    SGFX_LOG_PRINTF
+#endif
 
 /*********************
  *    DECLARATIONS

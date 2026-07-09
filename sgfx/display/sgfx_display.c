@@ -6,11 +6,22 @@
 /*********************
  *      INCLUDES
  *********************/
-#include "display.h"
-#include "display_log.h"
+#include "sgfx_display.h"
+#include "sgfx_log.h"
 /*********************
  *      MACROS
  *********************/
+#if SGFX_LOG_DISPLAY_ENABLE
+    #define LOG_TRACE_DISPLAY(fmt, ...)  SGFX_LOG_TRACE(fmt, ##__VA_ARGS__)
+    #define LOG_INFO_DISPLAY(fmt, ...)   SGFX_LOG_INFO(fmt, ##__VA_ARGS__)
+    #define LOG_WARN_DISPLAY(fmt, ...)   SGFX_LOG_WARN(fmt, ##__VA_ARGS__)
+    #define LOG_ERROR_DISPLAY(fmt, ...)  SGFX_LOG_ERROR(fmt, ##__VA_ARGS__)
+#else
+    #define LOG_TRACE_DISPLAY(fmt, ...)  do{} while(0)
+    #define LOG_INFO_DISPLAY(fmt, ...)   do{} while(0)
+    #define LOG_WARN_DISPLAY(fmt, ...)   do{} while(0)
+    #define LOG_ERROR_DISPLAY(fmt, ...)  do{} while(0)
+#endif /* SGFX_LOG_DISPLAY_ENABLE */
 
 /**********************
  *   GLOBAL VARIABLES
@@ -31,12 +42,13 @@
 /*---------------------
 *      Register
 *--------------------*/
-void display_register_instance(struct display * self, 
-                               const struct display_drawing ** drawing, 
-                               const struct display_backlight ** backlight)
+void sgfx_display_register_instance(struct sgfx_display * self, 
+                            const struct sgfx_display_drawing ** drawing, 
+                            const struct sgfx_display_backlight ** backlight)
 {
     self->drawing = drawing;
     self->backlight = backlight;
+    self->context.color = 0xFFFFFFFF; /* Default color: white */
 
     LOG_INFO_DISPLAY("Display instance registered with drawing and backlight");
 }
@@ -45,7 +57,7 @@ void display_register_instance(struct display * self,
 /*---------------------
  *      Drawing
  *--------------------*/
-void display_fill_point(const struct display * self, 
+void sgfx_display_fill_point(const struct sgfx_display * self, 
                         uint16_t x, 
                         uint16_t y)
 {
@@ -62,7 +74,7 @@ void display_fill_point(const struct display * self,
     }
 }
 
-void display_fill_rectangle(const struct display * self, 
+void sgfx_display_fill_rectangle(const struct sgfx_display * self, 
                              uint16_t x, 
                              uint16_t y, 
                              uint16_t w, 
@@ -81,7 +93,7 @@ void display_fill_rectangle(const struct display * self,
     }    
 }
 
-void display_flush(const struct display * self, 
+void sgfx_display_flush(const struct sgfx_display * self, 
                    uint16_t x1, 
                    uint16_t y1, 
                    uint16_t x2, 
@@ -99,7 +111,7 @@ void display_flush(const struct display * self,
     }
 }
 
-void display_set_color(struct display * self, 
+void sgfx_display_set_color(struct sgfx_display * self, 
                              uint32_t color)
 {
     self->context.color = color;
@@ -107,7 +119,7 @@ void display_set_color(struct display * self,
     LOG_INFO_DISPLAY("Set brush color to 0x%X", color);
 }
 
-void display_draw_line(const struct display * self, 
+void sgfx_display_draw_line(const struct sgfx_display * self, 
                        uint16_t x1, 
                        uint16_t y1, 
                        uint16_t x2, 
@@ -147,7 +159,7 @@ void display_draw_line(const struct display * self,
     err = dx - dy;
     
     while(1) {
-        display_fill_point(self, x1, y1);
+        sgfx_display_fill_point(self, x1, y1);
         
         if(x1 == x2 && y1 == y2) {
             break;
@@ -169,7 +181,7 @@ void display_draw_line(const struct display * self,
     LOG_TRACE_DISPLAY("End!");
 }
 
-void display_draw_triangle(const struct display * self,
+void sgfx_display_draw_triangle(const struct sgfx_display * self,
                                 uint16_t x1,
                                 uint16_t y1,
                                 uint16_t x2,
@@ -177,24 +189,24 @@ void display_draw_triangle(const struct display * self,
                                 uint16_t x3,
                                 uint16_t y3)
 {
-    display_draw_line(self, x1, y1, x2, y2);
-    display_draw_line(self, x2, y2, x3, y3);
-    display_draw_line(self, x3, y3, x1, y1);
+    sgfx_display_draw_line(self, x1, y1, x2, y2);
+    sgfx_display_draw_line(self, x2, y2, x3, y3);
+    sgfx_display_draw_line(self, x3, y3, x1, y1);
 }
 
-void display_draw_rectangle(const struct display * self,
+void sgfx_display_draw_rectangle(const struct sgfx_display * self,
                              uint16_t x,
                              uint16_t y,
                              uint16_t w,
                              uint16_t h)
 {
-    display_draw_line(self, x, y, x + w, y);
-    display_draw_line(self, x + w, y, x + w, y + h);
-    display_draw_line(self, x + w, y + h, x, y + h);
-    display_draw_line(self, x, y + h, x, y);
+    sgfx_display_draw_line(self, x, y, x + w, y);
+    sgfx_display_draw_line(self, x + w, y, x + w, y + h);
+    sgfx_display_draw_line(self, x + w, y + h, x, y + h);
+    sgfx_display_draw_line(self, x, y + h, x, y);
 }
 
-void display_draw_circle(const struct display * self,
+void sgfx_display_draw_circle(const struct sgfx_display * self,
                           uint16_t x,
                           uint16_t y,
                           uint16_t r)
@@ -203,10 +215,10 @@ void display_draw_circle(const struct display * self,
 
     int x_add = -r, yadd = 0, err = 2 - 2 * r, e2;
     do {   
-        display_fill_point(self, x - x_add, y + yadd);
-        display_fill_point(self, x + x_add, y + yadd);
-        display_fill_point(self, x + x_add, y - yadd);
-        display_fill_point(self, x - x_add, y - yadd);
+        sgfx_display_fill_point(self, x - x_add, y + yadd);
+        sgfx_display_fill_point(self, x + x_add, y + yadd);
+        sgfx_display_fill_point(self, x + x_add, y - yadd);
+        sgfx_display_fill_point(self, x - x_add, y - yadd);
 
         e2 = err;
         if (e2 <= yadd) {
@@ -220,7 +232,7 @@ void display_draw_circle(const struct display * self,
     LOG_TRACE_DISPLAY("End!");
 }
 
-void display_draw_ellipse(const struct display * self,
+void sgfx_display_draw_ellipse(const struct sgfx_display * self,
                                uint16_t x,
                                uint16_t y,
                                uint16_t rx,
@@ -239,10 +251,10 @@ void display_draw_ellipse(const struct display * self,
         do {
             K = (float)(rad1/rad2);
 
-            display_fill_point(self, x - x_add, y + (uint16_t)(y_add / K));
-            display_fill_point(self, x + x_add, y + (uint16_t)(y_add / K));
-            display_fill_point(self, x + x_add, y - (uint16_t)(y_add / K));
-            display_fill_point(self, x - x_add, y - (uint16_t)(y_add / K));
+            sgfx_display_fill_point(self, x - x_add, y + (uint16_t)(y_add / K));
+            sgfx_display_fill_point(self, x + x_add, y + (uint16_t)(y_add / K));
+            sgfx_display_fill_point(self, x + x_add, y - (uint16_t)(y_add / K));
+            sgfx_display_fill_point(self, x - x_add, y - (uint16_t)(y_add / K));
 
             e2 = err;
             if (e2 <= y_add) {
@@ -260,10 +272,10 @@ void display_draw_ellipse(const struct display * self,
         do { 
             K = (float)(rad2/rad1);
 
-            display_fill_point(self, x - (uint16_t)(x_add / K), y + y_add);
-            display_fill_point(self, x + (uint16_t)(x_add / K), y + y_add);
-            display_fill_point(self, x + (uint16_t)(x_add / K), y - y_add);
-            display_fill_point(self, x - (uint16_t)(x_add / K), y - y_add);
+            sgfx_display_fill_point(self, x - (uint16_t)(x_add / K), y + y_add);
+            sgfx_display_fill_point(self, x + (uint16_t)(x_add / K), y + y_add);
+            sgfx_display_fill_point(self, x + (uint16_t)(x_add / K), y - y_add);
+            sgfx_display_fill_point(self, x - (uint16_t)(x_add / K), y - y_add);
 
             e2 = err;
             if (e2 <= x_add) {
@@ -278,7 +290,7 @@ void display_draw_ellipse(const struct display * self,
     LOG_TRACE_DISPLAY("End!");
 }
 
-int display_ioctrl(const struct display * self, uint32_t command, void * arg)
+int sgfx_display_ioctrl(const struct sgfx_display * self, uint32_t command, void * arg)
 {
     LOG_TRACE_DISPLAY("Begin!");
 
@@ -303,7 +315,7 @@ int display_ioctrl(const struct display * self, uint32_t command, void * arg)
 /*---------------------
  *      Backlight
  *--------------------*/
-void display_set_backlight_state(const struct display * self, uint8_t state)
+void sgfx_display_set_backlight_state(const struct sgfx_display * self, uint8_t state)
 {
     LOG_TRACE_DISPLAY("Begin!");
 
@@ -320,7 +332,7 @@ void display_set_backlight_state(const struct display * self, uint8_t state)
     LOG_TRACE_DISPLAY("End!");
 }
 
-void display_get_backlight_state(const struct display * self, uint8_t * state)
+void sgfx_display_get_backlight_state(const struct sgfx_display * self, uint8_t * state)
 {
     LOG_TRACE_DISPLAY("Begin!");
 
@@ -337,7 +349,7 @@ void display_get_backlight_state(const struct display * self, uint8_t * state)
     LOG_TRACE_DISPLAY("End!");
 }
 
-void display_set_backlight_brightness(const struct display * self, uint8_t brightness)
+void sgfx_display_set_backlight_brightness(const struct sgfx_display * self, uint8_t brightness)
 {
     LOG_TRACE_DISPLAY("Begin!");
 
@@ -354,7 +366,7 @@ void display_set_backlight_brightness(const struct display * self, uint8_t brigh
     LOG_TRACE_DISPLAY("End!");
 }
 
-void display_get_backlight_brightness(const struct display * self, uint8_t * brightness)
+void sgfx_display_get_backlight_brightness(const struct sgfx_display * self, uint8_t * brightness)
 {
     LOG_TRACE_DISPLAY("Begin!");
 

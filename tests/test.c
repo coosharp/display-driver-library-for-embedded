@@ -1,14 +1,14 @@
-#include "display.h"
+#include "sgfx_display.h"
 
 
 
 int main(void)
 {
 
-    struct display display_instance;
+    struct sgfx_display display_instance;
 
 
-    display_register_instance(&display_instance, NULL, NULL);
+    sgfx_display_register_instance(&display_instance, NULL, NULL);
 
     return 0;
 }
