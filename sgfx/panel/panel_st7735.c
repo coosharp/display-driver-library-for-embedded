@@ -79,63 +79,7 @@ void st7735_prepare(const struct display_painter ** painter)
 {
     const struct st7735 * self = (const struct st7735 *)painter;
 
-    panel_spi_select(self->spi, 1);
 
-    _st7735_write_reg(self, ST7735_SW_RESET, NULL, 0);
-
-    _st7735_write_reg(self, ST7735_SLEEP_OUT, st7735_sleep_out_params, sizeof(st7735_sleep_out_params));
-
-    panel_spi_delay_ms(self->spi, 10);
-
-    _st7735_write_reg(self, ST7735_DISPLAY_OFF, NULL, 0);
-
-    _st7735_write_reg(self, ST7735_FRAME_RATE_CTRL1, st7735_frame_rate_ctrl1_params, sizeof(st7735_frame_rate_ctrl1_params));
-
-    _st7735_write_reg(self, ST7735_FRAME_RATE_CTRL2, st7735_frame_rate_ctrl2_params, sizeof(st7735_frame_rate_ctrl2_params));
-
-    _st7735_write_reg(self, ST7735_FRAME_RATE_CTRL3, st7735_frame_rate_ctrl3_params, sizeof(st7735_frame_rate_ctrl3_params));
-
-    _st7735_write_reg(self, ST7735_FRAME_INVERSION_CTRL, st7735_frame_inversion_ctrl_params, sizeof(st7735_frame_inversion_ctrl_params));
-
-    _st7735_write_reg(self, ST7735_PWR_CTRL1, st7735_pwr_ctrl1_params, sizeof(st7735_pwr_ctrl1_params));
-
-    _st7735_write_reg(self, ST7735_PWR_CTRL2, st7735_pwr_ctrl2_params, sizeof(st7735_pwr_ctrl2_params));
-
-    _st7735_write_reg(self, ST7735_PWR_CTRL3, st7735_pwr_ctrl3_params, sizeof(st7735_pwr_ctrl3_params));
-
-    _st7735_write_reg(self, ST7735_PWR_CTRL4, st7735_pwr_ctrl4_params, sizeof(st7735_pwr_ctrl4_params));
-
-    _st7735_write_reg(self, ST7735_PWR_CTRL5, st7735_pwr_ctrl5_params, sizeof(st7735_pwr_ctrl5_params));
-
-    _st7735_write_reg(self, ST7735_VCOMH_VCOML_CTRL1, st7735_vcomh_vcoml_ctrl1_params, sizeof(st7735_vcomh_vcoml_ctrl1_params));
-
-    _st7735_write_reg(self, ST7735_DISPLAY_INVERSION_OFF, NULL, 0);
-
-    _st7735_write_reg(self, ST7735_PV_GAMMA_CTRL, st7735_pv_gamma_ctrl_params, sizeof(st7735_pv_gamma_ctrl_params));
-
-    _st7735_write_reg(self, ST7735_NV_GAMMA_CTRL, st7735_nv_gamma_ctrl_params, sizeof(st7735_nv_gamma_ctrl_params));
-   
-    _st7735_write_reg(self, ST7735_NORMAL_DISPLAY_OFF, NULL, 0);
-
-
-    if(strcmp(self->context.color_mode, "RGB444") == 0) {
-        _st7735_write_reg(self, ST7735_COLOR_MODE, &st7735_color_mode_params[0], 1);
-    }
-    else if(strcmp(self->context.color_mode, "RGB565") == 0) {
-        _st7735_write_reg(self, ST7735_COLOR_MODE, &st7735_color_mode_params[1], 1);
-    }
-    else if(strcmp(self->context.color_mode, "RGB666") == 0) {
-        _st7735_write_reg(self, ST7735_COLOR_MODE, &st7735_color_mode_params[2], 1);
-    }
-    else {
-        LOG_WARN_DISPLAY("Invalid color mode: %s. Supported modes are: RGB444, RGB565, RGB666. Defaulting to RGB565", self->context.color_mode);
-        _st7735_write_reg(self, ST7735_COLOR_MODE, &st7735_color_mode_params[1], 1);
-    }
-    
-
-    _st7735_write_reg(self, ST7735_DISPLAY_ON, NULL, 0);
-    
-    panel_spi_select(self->spi, 0);
 }
 
 void st7735_set_cursor(const struct display_painter ** painter, 
@@ -189,16 +133,7 @@ void st7735_fill_point(const struct display_painter ** painter,
                        uint16_t y, 
                        uint32_t color)
 {
-    const struct st7735 * self = (const struct st7735 *)painter;
-    uint16_t data[] = {color};
 
-    st7735_set_cursor(painter, x, y);
-
-    panel_spi_select(self->spi, 1);
-
-    panel_spi_write_data16(self->spi, &data[0], 1);
-
-    panel_spi_select(self->spi, 0);
 }
 
 
@@ -209,9 +144,7 @@ void st7735_fill_point(const struct display_painter ** painter,
  *   STATIC FUNCTIONS
  **********************/
 static void _st7735_write_reg(const struct st7735 * self, 
-                              uint8_t reg, 
-                              const uint8_t * data, 
-                              size_t size)
+                              )
 {
     panel_spi_write_command(self->spi, &reg, 1);
     panel_spi_write_data8(self->spi, data, size);

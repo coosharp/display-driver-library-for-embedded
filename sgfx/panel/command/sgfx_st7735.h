@@ -23,6 +23,11 @@ extern "C" {
  *    DECLARATIONS
  *********************/
 
+struct sgfx_st7735
+{
+    const struct sgfx_lcd_drawing * drawing;
+    const struct sgfx_lcd_driver ** driver;
+};
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/

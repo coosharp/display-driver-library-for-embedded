@@ -45,6 +45,15 @@ typedef int  (* lcd_ioctrl_fn_t)        (const sgfx_lcd_drawing_t ** drawing,
                                      uint32_t command, 
                                      void * arg);
 
+typedef struct sgfx_lcd_driver sgfx_lcd_driver_t;
+
+typedef int (* lcd_start_transfer_fn_t) (const sgfx_lcd_driver_t ** driver);
+typedef int (* lcd_stop_transfer_fn_t) (const sgfx_lcd_driver_t ** driver);
+typedef int (* lcd_write_command_fn_t)(const sgfx_lcd_driver_t ** driver, uint8_t command);
+typedef int (* lcd_write_data8_fn_t)(const sgfx_lcd_driver_t ** driver, const uint8_t * src, size_t size);
+typedef int (* lcd_write_data16_fn_t)(const sgfx_lcd_driver_t ** driver, const uint16_t * src, size_t size);
+typedef int (* lcd_copy_data_fn_t)(const sgfx_lcd_driver_t ** driver, const void * src, size_t size);
+typedef int (* lcd_delay_ms_fn_t) (const sgfx_lcd_driver_t ** driver, uint32_t ms);
 
 struct sgfx_lcd_drawing
 {
@@ -54,15 +63,20 @@ struct sgfx_lcd_drawing
     lcd_ioctrl_fn_t        ioctrl;
 };
 
-struct sgfx_lcd_interface
+struct sgfx_lcd_driver
 {
-
+    lcd_write_command_fn_t write_command;
+    lcd_write_data8_fn_t write_data8;
+    lcd_write_data16_fn_t write_data16;
+    lcd_copy_data_fn_t copy_data;
+    lcd_delay_ms_fn_t delay_ms;
 };
 
 struct sgfx_lcd
 {
     const struct sgfx_display_drawing * drawing_ops;
     const struct sgfx_lcd_drawing ** drawing_impl;
+    const struct sgfx_lcd_driver ** driver;
 }
 /**********************
 *  GLOBAL PROTOTYPES
@@ -90,6 +104,19 @@ int sgfx_lcd_ioctrl(const struct sgfx_display_drawing ** drawing,
                     uint32_t command, 
                     void * arg);
  
+
+
+int sgfx_lcd_start_transfer(const struct sgfx_lcd_driver ** driver);
+int sgfx_lcd_stop_transfer(const struct sgfx_lcd_driver ** driver);
+int sgfx_lcd_write_command(const struct sgfx_lcd_driver ** driver, uint8_t command);
+int sgfx_lcd_write_data8(const struct sgfx_lcd_driver ** driver, const uint8_t * src, size_t size);
+int sgfx_lcd_write_data16(const struct sgfx_lcd_driver ** driver, const uint16_t * src, size_t size);
+int sgfx_lcd_copy_data(const struct sgfx_lcd_driver ** driver, const void * src, size_t size);
+void sgfx_lcd_delay_ms(const struct sgfx_lcd_driver ** driver);
+
+
+
+
 
 #ifdef __cplusplus
 }
