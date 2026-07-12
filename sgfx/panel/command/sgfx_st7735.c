@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "sgfx_st7735.h"
-#include "sgfx_lcd.h"
+#include "sgfx_config.h"
 /*********************
  *      MACROS
  *********************/
@@ -21,6 +21,24 @@
 #define LOG_INFO_ST7735
 #define LOG_WARN_ST7735
 #define LOG_ERROR_ST7735
+
+
+#define ST7735_DELAY    (0x80)
+
+
+#if     SGFX_LCD_COLOR_MODE == SGFX_COLOR_RGB444
+    #define ST7735_COLOR_FORMAT ST7735_FORMAT_RBG444
+
+#elif   SGFX_LCD_COLOR_MODE == SGFX_COLOR_RGB565
+    #define ST7735_COLOR_FORMAT ST7735_FORMAT_RBG565
+
+#elif   SGFX_LCD_COLOR_MODE == SGFX_COLOR_RGB666
+    #define ST7735_COLOR_FORMAT ST7735_FORMAT_RBG666
+
+#else   
+    #pragma message()
+    #define ST7735_COLOR_FORMAT
+#endif
 
 /**********************
  *   GLOBAL VARIABLES
@@ -48,42 +66,28 @@ static void _st7735_set_orientation(const struct sgfx_lcd_drawing ** drawing, ui
 /**********************
  *  STATIC VARIABLES
  **********************/
-static const uint8_t st7735_sleep_out_params[] = {0x00};
-static const uint8_t st7735_frame_rate_ctrl1_params[] = {0x05, 0x3C, 0x3C};
-static const uint8_t st7735_frame_rate_ctrl2_params[] = {0x05, 0x3C, 0x3C};
-static const uint8_t st7735_frame_rate_ctrl3_params[] = {0x05, 0x3C, 0x3C, 0x05, 0x3C, 0x3C};
-static const uint8_t st7735_frame_inversion_ctrl_params[] = {0x03};
-static const uint8_t st7735_pwr_ctrl1_params[] = {0x28, 0x08, 0x04};
-static const uint8_t st7735_pwr_ctrl2_params[] = {0xC0};
-static const uint8_t st7735_pwr_ctrl3_params[] = {0x0D, 0x00};
-static const uint8_t st7735_pwr_ctrl4_params[] = {0x8D, 0x2A};
-static const uint8_t st7735_pwr_ctrl5_params[] = {0x8D, 0xEE};
-static const uint8_t st7735_vcomh_vcoml_ctrl1_params[] = {0x1A};
-static const uint8_t st7735_color_mode_params[] = {ST7735_FORMAT_RBG444, ST7735_FORMAT_RBG565, ST7735_FORMAT_RBG666};
-static const uint8_t st7735_pv_gamma_ctrl_params[] = {0x04, 0x22, 0x07, 0x0A, 0x2E, 0x30, 0x25, 0x2A, 0x28, 0x26, 0x2E, 0x3A, 0x00, 0x01, 0x03, 0x13};
-static const uint8_t st7735_nv_gamma_ctrl_params[] = {0x04, 0x16, 0x06, 0x0D, 0x2D, 0x26, 0x23, 0x27, 0x27, 0x25, 0x2D, 0x3B, 0x01, 0x00, 0x04, 0x13};
-
 static const uint8_t ucInitCmdList[] = 
 {
-    ST7735_SW_RESET,            0,
-    ST7735_SLEEP_OUT,           1,  0x00,
-    ST7735_DISPLAY_OFF,         1,  0x00,
-    ST7735_FRAME_RATE_CTRL1,
-    ST7735_FRAME_RATE_CTRL2,
-    ST7735_FRAME_RATE_CTRL3
-    ST7735_FRAME_INVERSION_CTRL
-    ST7735_PWR_CTRL1,
-    ST7735_PWR_CTRL2,
-    ST7735_PWR_CTRL3,
-    ST7735_PWR_CTRL4,
-    ST7735_PWR_CTRL5,
-    ST7735_VCOMH_VCOML_CTRL1,
-    ST7735_PV_GAMMA_CTRL, 
-    ST7735_NV_GAMMA_CTRL,
-    ST7735_DISPLAY_INVERSION_OFF, 
-    ST7735_NORMAL_DISPLAY_OFF,
-    ST7735_COLOR_MODE, 
-
+    ST7735_SW_RESET,                0,
+    ST7735_SLEEP_OUT,               1,  0x00,
+    ST7735_DELAY,                   10,                
+    ST7735_DISPLAY_OFF,             0,
+    ST7735_FRAME_RATE_CTRL1,        3,  0x05, 0x3C, 0x3C,
+    ST7735_FRAME_RATE_CTRL2,        3,  0x05, 0x3C, 0x3C,
+    ST7735_FRAME_RATE_CTRL3         6,  0x05, 0x3C, 0x3C, 0x05, 0x3C, 0x3C,
+    ST7735_FRAME_INVERSION_CTRL,    1,  0x03,
+    ST7735_PWR_CTRL1,               3,  0x28, 0x08, 0x04,
+    ST7735_PWR_CTRL2,               1,  0xC0,
+    ST7735_PWR_CTRL3,               2,  0x0D, 0x00,
+    ST7735_PWR_CTRL4,               2,  0x8D, 0x2A,
+    ST7735_PWR_CTRL5,               2,  0x8D, 0xEE,
+    ST7735_VCOMH_VCOML_CTRL1,       1,  0x1A,
+    ST7735_PV_GAMMA_CTRL,           16, 0x04, 0x22, 0x07, 0x0A, 0x2E, 0x30, 0x25, 0x2A, 0x28, 0x26, 0x2E, 0x3A, 0x00, 0x01, 0x03, 0x13,
+    ST7735_NV_GAMMA_CTRL,           16, 0x04, 0x16, 0x06, 0x0D, 0x2D, 0x26, 0x23, 0x27, 0x27, 0x25, 0x2D, 0x3B, 0x01, 0x00, 0x04, 0x13,
+    ST7735_DISPLAY_INVERSION_OFF,   0,
+    ST7735_NORMAL_DISPLAY_OFF,      0,
+    ST7735_COLOR_MODE,              1,   ST7735_COLOR_FORMAT,
+    ST7735_DISPLAY_ON,              0,
 };
 
 static const struct sgfx_lcd_drawing tDrawing = 
@@ -95,66 +99,28 @@ static const struct sgfx_lcd_drawing tDrawing =
  **********************/ 
 void sgfx_st7735_prepare(const struct sgfx_lcd_drawing ** drawing)
 {
+    uint8_t cmd = 0;
+    uint8_t num = 0;
     const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
 
     _st7735_start_transfer(drawing);
 
-    _st7735_write_reg(drawing, );
+    for(;;) {
+        cmd = *ucInitCmdList++;
+        num = *ucInitCmdList++;
+        if(cmd == ST7735_DELAY) {
+            _st7735_delay_ms(drawing, num);
+        }
+        else if(cmd == ST7735_COLOR_MODE) {
 
-    _st7735_write_reg(drawing, , st7735_sleep_out_params, sizeof(st7735_sleep_out_params));
-    _st7735_send_data();
-
-    panel_spi_delay_ms(self->spi, 10);
-
-    _st7735_write_reg(drawing, , NULL, 0);
-
-    _st7735_write_reg(drawing, , st7735_frame_rate_ctrl1_params, sizeof(st7735_frame_rate_ctrl1_params));
-
-    _st7735_write_reg(drawing, , st7735_frame_rate_ctrl2_params, sizeof(st7735_frame_rate_ctrl2_params));
-
-    _st7735_write_reg(drawing, , st7735_frame_rate_ctrl3_params, sizeof(st7735_frame_rate_ctrl3_params));
-
-    _st7735_write_reg(drawing, , st7735_frame_inversion_ctrl_params, sizeof(st7735_frame_inversion_ctrl_params));
-
-    _st7735_write_reg(drawing, , st7735_pwr_ctrl1_params, sizeof(st7735_pwr_ctrl1_params));
-
-    _st7735_write_reg(drawing, , st7735_pwr_ctrl2_params, sizeof(st7735_pwr_ctrl2_params));
-
-    _st7735_write_reg(drawing, , st7735_pwr_ctrl3_params, sizeof(st7735_pwr_ctrl3_params));
-
-    _st7735_write_reg(drawing, , st7735_pwr_ctrl4_params, sizeof(st7735_pwr_ctrl4_params));
-
-    _st7735_write_reg(drawing, , st7735_pwr_ctrl5_params, sizeof(st7735_pwr_ctrl5_params));
-
-    _st7735_write_reg(drawing, , st7735_vcomh_vcoml_ctrl1_params, sizeof(st7735_vcomh_vcoml_ctrl1_params));
-
-    _st7735_write_reg(drawing, , NULL, 0);
-
-    _st7735_write_reg(drawing, , st7735_pv_gamma_ctrl_params, sizeof(st7735_pv_gamma_ctrl_params));
-
-    _st7735_write_reg(drawing, , st7735_nv_gamma_ctrl_params, sizeof(st7735_nv_gamma_ctrl_params));
-   
-    _st7735_write_reg(drawing, , NULL, 0);
-
-
-    if(strcmp(self->context.color_mode, "RGB444") == 0) {
-        _st7735_write_reg(self, ST7735_COLOR_MODE, &st7735_color_mode_params[0], 1);
+        }
+        else {
+            _st7735_write_reg(drawing, cmd);
+            _st7735_send_data(drawing, ucInitCmdList, num);
+        }
     }
-    else if(strcmp(self->context.color_mode, "RGB565") == 0) {
-        _st7735_write_reg(self, , &st7735_color_mode_params[1], 1);
-    }
-    else if(strcmp(self->context.color_mode, "RGB666") == 0) {
-        _st7735_write_reg(self, ST7735_COLOR_MODE, &st7735_color_mode_params[2], 1);
-    }
-    else {
-        LOG_WARN_DISPLAY("Invalid color mode: %s. Supported modes are: RGB444, RGB565, RGB666. Defaulting to RGB565", self->context.color_mode);
-        _st7735_write_reg(self, ST7735_COLOR_MODE, &st7735_color_mode_params[1], 1);
-    }
-    
 
-    _st7735_write_reg(self, ST7735_DISPLAY_ON, NULL, 0);
-    
-    panel_spi_select(self->spi, 0);
+    _st7735_stop_transfer(drawing);
 }
 
 void sgfx_st7735_fill_point(const struct sgfx_lcd_drawing ** drawing, 
