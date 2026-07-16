@@ -42,7 +42,7 @@
 /*---------------------
 *      Register
 *--------------------*/
-void sgfx_display_register_instance(struct sgfx_display * self, 
+void sgfx_display_register(struct sgfx_display * self, 
                             const struct sgfx_display_drawing ** drawing, 
                             const struct sgfx_display_backlight ** backlight)
 {
@@ -61,7 +61,7 @@ void sgfx_display_fill_point(const struct sgfx_display * self,
                         uint16_t x, 
                         uint16_t y)
 {
-    fill_point_fn_t fn = (*self->drawing)->fill_point;
+    display_fill_point_fn_t fn = (*self->drawing)->fill_point;
 
     uint32_t color = self->context.color;
 
@@ -80,7 +80,7 @@ void sgfx_display_fill_rectangle(const struct sgfx_display * self,
                              uint16_t w, 
                              uint16_t h)
 {
-    fill_rectangle_fn_t fn = (*self->drawing)->fill_rectangle;
+    display_fill_rectangle_fn_t fn = (*self->drawing)->fill_rectangle;
 
     uint32_t color = self->context.color;
 
@@ -100,7 +100,7 @@ void sgfx_display_flush(const struct sgfx_display * self,
                    uint16_t y2, 
                    const void * data)
 {
-    flush_fn_t fn = (*self->drawing)->flush;
+    display_flush_fn_t fn = (*self->drawing)->flush;
     
     if(fn) {
         LOG_INFO_DISPLAY("Flushed area from (%d, %d) to (%d, %d)", x1, y1, x2, y2);
@@ -296,7 +296,7 @@ int sgfx_display_ioctrl(const struct sgfx_display * self, uint32_t command, void
 
     int result = -1;
 
-    ioctrl_fn_t fn = (*self->drawing)->ioctrl;
+    display_ioctrl_fn_t fn = (*self->drawing)->ioctrl;
 
     LOG_INFO_DISPLAY("Performing ioctrl command: %d", command);
 
@@ -319,7 +319,7 @@ void sgfx_display_set_backlight_state(const struct sgfx_display * self, uint8_t 
 {
     LOG_TRACE_DISPLAY("Begin!");
 
-    set_backlight_state_fn_t fn = (*self->backlight)->set_backlight_state;
+    display_set_backlight_state_fn_t fn = (*self->backlight)->set_backlight_state;
 
     if(fn) {
         LOG_INFO_DISPLAY("Set backlight state to %d", state);
@@ -336,7 +336,7 @@ void sgfx_display_get_backlight_state(const struct sgfx_display * self, uint8_t 
 {
     LOG_TRACE_DISPLAY("Begin!");
 
-    get_backlight_state_fn_t fn = (*self->backlight)->get_backlight_state;
+    display_get_backlight_state_fn_t fn = (*self->backlight)->get_backlight_state;
 
     if(fn) {
         fn(self->backlight, state);
@@ -353,7 +353,7 @@ void sgfx_display_set_backlight_brightness(const struct sgfx_display * self, uin
 {
     LOG_TRACE_DISPLAY("Begin!");
 
-    set_backlight_brightness_fn_t fn = (*self->backlight)->set_backlight_brightness;
+    display_set_backlight_brightness_fn_t fn = (*self->backlight)->set_backlight_brightness;
 
     if(fn) {
         LOG_INFO_DISPLAY("Set backlight brightness to %d", brightness);
@@ -370,7 +370,7 @@ void sgfx_display_get_backlight_brightness(const struct sgfx_display * self, uin
 {
     LOG_TRACE_DISPLAY("Begin!");
 
-    get_backlight_brightness_fn_t fn = (*self->backlight)->get_backlight_brightness;
+    display_get_backlight_brightness_fn_t fn = (*self->backlight)->get_backlight_brightness;
 
     if(fn) {
         fn(self->backlight, brightness);

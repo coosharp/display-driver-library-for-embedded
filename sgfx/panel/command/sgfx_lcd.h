@@ -47,13 +47,13 @@ typedef int  (* lcd_ioctrl_fn_t)        (const sgfx_lcd_drawing_t ** drawing,
 
 typedef struct sgfx_lcd_driver sgfx_lcd_driver_t;
 
-typedef int (* lcd_start_transfer_fn_t) (const sgfx_lcd_driver_t ** driver);
-typedef int (* lcd_stop_transfer_fn_t) (const sgfx_lcd_driver_t ** driver);
-typedef int (* lcd_write_command_fn_t)(const sgfx_lcd_driver_t ** driver, uint8_t command);
-typedef int (* lcd_write_data8_fn_t)(const sgfx_lcd_driver_t ** driver, const uint8_t * src, size_t size);
-typedef int (* lcd_write_data16_fn_t)(const sgfx_lcd_driver_t ** driver, const uint16_t * src, size_t size);
-typedef int (* lcd_copy_data_fn_t)(const sgfx_lcd_driver_t ** driver, const void * src, size_t size);
-typedef int (* lcd_delay_ms_fn_t) (const sgfx_lcd_driver_t ** driver, uint32_t ms);
+typedef int  (* lcd_start_transfer_fn_t) (const sgfx_lcd_driver_t ** driver);
+typedef int  (* lcd_stop_transfer_fn_t) (const sgfx_lcd_driver_t ** driver);
+typedef int  (* lcd_write_command_fn_t)(const sgfx_lcd_driver_t ** driver, uint8_t command);
+typedef int  (* lcd_write_data8_fn_t)(const sgfx_lcd_driver_t ** driver, const uint8_t * src, size_t size);
+typedef int  (* lcd_write_data16_fn_t)(const sgfx_lcd_driver_t ** driver, const uint16_t * src, size_t size);
+typedef int  (* lcd_copy_data_fn_t)(const sgfx_lcd_driver_t ** driver, const void * src, size_t size);
+typedef void (* lcd_delay_ms_fn_t) (const sgfx_lcd_driver_t ** driver, uint32_t ms);
 
 struct sgfx_lcd_drawing
 {
@@ -65,6 +65,8 @@ struct sgfx_lcd_drawing
 
 struct sgfx_lcd_driver
 {
+    lcd_start_transfer_fn_t start_transfer;
+    lcd_stop_transfer_fn_t stop_transfer;
     lcd_write_command_fn_t write_command;
     lcd_write_data8_fn_t write_data8;
     lcd_write_data16_fn_t write_data16;
@@ -74,36 +76,13 @@ struct sgfx_lcd_driver
 
 struct sgfx_lcd
 {
-    const struct sgfx_display_drawing * drawing_ops;
-    const struct sgfx_lcd_drawing ** drawing_impl;
-    const struct sgfx_lcd_driver ** driver;
-}
+    const struct sgfx_display_drawing * display_drawing;
+    const struct sgfx_lcd_drawing ** lcd_drawing;
+};
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
-void sgfx_lcd_fill_point(const struct sgfx_display_drawing ** drawing, 
-                         uint16_t x, 
-                         uint16_t y, 
-                         uint32_t color);
-
-void sgfx_lcd_fill_rectangle(const struct sgfx_display_drawing ** drawing, 
-                             uint16_t x, 
-                             uint16_t y, 
-                             uint16_t w, 
-                             uint16_t h, 
-                             uint32_t color);
-                            
-void sgfx_lcd_flush(const struct sgfx_display_drawing ** drawing,
-                    uint16_t x1, 
-                    uint16_t y1, 
-                    uint16_t x2, 
-                    uint16_t y2, 
-                    const void * data);
-
-int sgfx_lcd_ioctrl(const struct sgfx_display_drawing ** drawing,
-                    uint32_t command, 
-                    void * arg);
- 
+void sgfx_lcd_register(struct sgfx_lcd * self, const struct sgfx_lcd_drawing ** drawing);
 
 
 int sgfx_lcd_start_transfer(const struct sgfx_lcd_driver ** driver);

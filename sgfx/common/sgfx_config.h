@@ -37,21 +37,37 @@ extern "C" {
 #define SGFX_FB1_COLOR_MODE SGFX_COLOR_ARGB8888
 
 
-#define SGFX_LOG_ENABLE          (1)
-#define SGFX_LOG_COLOR_ENABLE    (1)
+#define SGFX_LOG_ENABLE          1
+#define SGFX_LOG_COLOR_ENABLE    1
 
-#define SGFX_LOG_DISPLAY_ENABLE  (1)
 
-#define SGFX_LOG_ST7735_ENABLE
+#if SGFX_LOG_ENABLE
+    #define SGFX_LOG_DISPLAY_ENABLE  1
 
-#define SGFX_LOG_ST7789_ENABLE
+    #define SGFX_LOG_ST7735_ENABLE   1
 
-#define SGFX_LOG_ST7796_ENABLE
+    #define SGFX_LOG_ST7789_ENABLE   1
+
+    #define SGFX_LOG_ST7796_ENABLE   1
+
+    #define SGFX_LOG_SPI_ENABLE      1
+#else 
+    #define SGFX_LOG_DISPLAY_ENABLE  0
+
+    #define SGFX_LOG_ST7735_ENABLE
+
+    #define SGFX_LOG_ST7789_ENABLE
+
+    #define SGFX_LOG_ST7796_ENABLE
+
+    #define SGFX_LOG_SPI_ENABLE
+#endif
+
 
 #if SGFX_LOG_ENABLE
     #define    SGFX_LOG_PRINTF    printf
 #else
-    #define    SGFX_LOG_PRINTF
+    #define    SGFX_LOG_PRINTF    
 #endif
 
 /*********************

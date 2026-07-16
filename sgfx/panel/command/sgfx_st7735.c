@@ -74,7 +74,7 @@ static const uint8_t ucInitCmdList[] =
     ST7735_DISPLAY_OFF,             0,
     ST7735_FRAME_RATE_CTRL1,        3,  0x05, 0x3C, 0x3C,
     ST7735_FRAME_RATE_CTRL2,        3,  0x05, 0x3C, 0x3C,
-    ST7735_FRAME_RATE_CTRL3         6,  0x05, 0x3C, 0x3C, 0x05, 0x3C, 0x3C,
+    ST7735_FRAME_RATE_CTRL3,        6,  0x05, 0x3C, 0x3C, 0x05, 0x3C, 0x3C,
     ST7735_FRAME_INVERSION_CTRL,    1,  0x03,
     ST7735_PWR_CTRL1,               3,  0x28, 0x08, 0x04,
     ST7735_PWR_CTRL2,               1,  0xC0,
@@ -90,24 +90,35 @@ static const uint8_t ucInitCmdList[] =
     ST7735_DISPLAY_ON,              0,
 };
 
-static const struct sgfx_lcd_drawing tDrawing = 
+static const struct sgfx_lcd_drawing tLcdDrawingST7735 = 
 {
-    .fill_point = NULL,
+    .fill_point     = sgfx_st7735_fill_point,
+    .fill_rectangle = sgfx_st7735_fill_rectangle,
+    .flush          = sgfx_st7735_flush,
 };
+
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/ 
+void sgfx_st7735_register(struct sgfx_st7735 * self, const struct sgfx_lcd_driver ** driver)
+{
+    self->lcd_drawing = &tLcdDrawingST7735;
+    self->lcd_driver = driver;
+}
+
+
 void sgfx_st7735_prepare(const struct sgfx_lcd_drawing ** drawing)
 {
     uint8_t cmd = 0;
     uint8_t num = 0;
+    uint8_t * addr = &ucInitCmdList[0];
     const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
 
     _st7735_start_transfer(drawing);
 
     for(;;) {
-        cmd = *ucInitCmdList++;
-        num = *ucInitCmdList++;
+        cmd = *addr++;
+        num = *addr++;
         if(cmd == ST7735_DELAY) {
             _st7735_delay_ms(drawing, num);
         }
@@ -116,7 +127,7 @@ void sgfx_st7735_prepare(const struct sgfx_lcd_drawing ** drawing)
         }
         else {
             _st7735_write_reg(drawing, cmd);
-            _st7735_send_data(drawing, ucInitCmdList, num);
+            _st7735_send_data(drawing, addr, num);
         }
     }
 
@@ -129,8 +140,6 @@ void sgfx_st7735_fill_point(const struct sgfx_lcd_drawing ** drawing,
                             uint32_t color)
 {
     const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
-
-    const struct st7735 * self = (const struct st7735 *)painter;
     uint16_t pixel = 0;
 
     /* Exchange LSB and MSB to fit LCD specification */
@@ -146,12 +155,22 @@ void sgfx_st7735_fill_point(const struct sgfx_lcd_drawing ** drawing,
     _st7735_stop_transfer(drawing);
 }
 
-void sgfx_st7735_fill_rectangle(const struct sgfx_lcd_drawing ** drawing)
+void sgfx_st7735_fill_rectangle(const struct sgfx_lcd_drawing ** drawing,
+                                uint16_t x,
+                                uint16_t y,
+                                uint16_t w,
+                                uint16_t h,
+                                uint32_t color)
 {
 
 }
 
-void sgfx_st7735_flush(const struct sgfx_lcd_drawing ** drawing)
+void sgfx_st7735_flush(const struct sgfx_lcd_drawing ** drawing,
+                       uint16_t x1, 
+                       uint16_t y1, 
+                       uint16_t x2, 
+                       uint16_t y2,
+                       const void * src)
 {
 
 }
@@ -161,16 +180,16 @@ void sgfx_st7735_flush(const struct sgfx_lcd_drawing ** drawing)
  **********************/
 static void _st7735_start_transfer(const struct sgfx_lcd_drawing ** drawing)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735)drawing;
+    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
 
-    sgfx_lcd_start_transfer(self->driver);
+    sgfx_lcd_start_transfer(self->lcd_driver);
 }
 
 static void _st7735_stop_transfer(const struct sgfx_lcd_drawing ** drawing)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735)drawing;
+    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
 
-    sgfx_lcd_stop_transfer(self->driver);
+    sgfx_lcd_stop_transfer(self->lcd_driver);
 }
 
 static void _st7735_delay_ms(const struct sgfx_lcd_drawing ** drawing, uint32_t ms)
@@ -180,25 +199,25 @@ static void _st7735_delay_ms(const struct sgfx_lcd_drawing ** drawing, uint32_t 
 
 static void _st7735_write_reg(const struct sgfx_lcd_drawing ** drawing, uint8_t reg)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735)drawing;
+    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
 
-    sgfx_lcd_write_command(self->driver, reg);
+    sgfx_lcd_write_command(self->lcd_driver, reg);
 }
 
 static void _st7735_send_data(const struct sgfx_lcd_drawing ** drawing,
                               const uint8_t * src,
                               size_t size)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735)drawing;
+    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
 
-    sgfx_lcd_write_data8(self->driver, src, size);
+    sgfx_lcd_write_data8(self->lcd_driver, src, size);
 }
 
 static void _st7735_set_cursor(const struct sgfx_lcd_drawing ** drawing, 
                                uint16_t x, 
                                uint16_t y)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735)drawing;
+    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
     const uint8_t command[] = {ST7735_CASET, ST7735_RASET, ST7735_RAMWR};
     
     uint8_t x_coord[] = {(x >> 8U), (x & 0xFFU)};
@@ -223,9 +242,7 @@ static void _st7735_set_window(const struct sgfx_lcd_drawing ** drawing,
                                uint16_t w, 
                                uint16_t h)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735)drawing;
-
-    const struct st7735 * self = (const struct st7735 *)painter;
+    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
     const uint8_t command[] = {ST7735_CASET, ST7735_RASET, ST7735_RAMWR};
 
     uint16_t x_start = x;
@@ -254,7 +271,7 @@ static void _st7735_set_window(const struct sgfx_lcd_drawing ** drawing,
 
 static void _st7735_set_orientation(const struct sgfx_lcd_drawing ** drawing, uint16_t rotation)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735)drawing;
+    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
 
     uint8_t mad_ctrl_param[1] = {0};
 

@@ -25,13 +25,30 @@ extern "C" {
 
 struct sgfx_st7735
 {
-    const struct sgfx_lcd_drawing * drawing;
-    const struct sgfx_lcd_driver ** driver;
+    const struct sgfx_lcd_drawing * lcd_drawing;
+    const struct sgfx_lcd_driver ** lcd_driver;
 };
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
-
+void sgfx_st7735_register(struct sgfx_st7735 * self, const struct sgfx_lcd_driver ** driver);
+void sgfx_st7735_prepare(const struct sgfx_lcd_drawing ** drawing);
+void sgfx_st7735_fill_point(const struct sgfx_lcd_drawing ** drawing, 
+                            uint16_t x,
+                            uint16_t y,
+                            uint32_t color);
+void sgfx_st7735_fill_rectangle(const struct sgfx_lcd_drawing ** drawing,
+                                uint16_t x,
+                                uint16_t y,
+                                uint16_t w,
+                                uint16_t h,
+                                uint32_t color);
+void sgfx_st7735_flush(const struct sgfx_lcd_drawing ** drawing,
+                       uint16_t x1, 
+                       uint16_t y1, 
+                       uint16_t x2, 
+                       uint16_t y2,
+                       const void * src);
 /*********************
  *      DEFINES
  *********************/

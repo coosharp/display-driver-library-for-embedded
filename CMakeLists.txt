@@ -14,6 +14,9 @@ configure_file(
 # 创建显示驱动库
 add_library(display_driver STATIC
     sgfx/display/sgfx_display.c
+    sgfx/interface/sgfx_spi.c
+    sgfx/panel/command/sgfx_lcd.c
+    sgfx/panel/command/sgfx_st7735.c
 )
 
 target_include_directories(display_driver
@@ -21,6 +24,8 @@ target_include_directories(display_driver
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/sgfx/display
         ${CMAKE_CURRENT_SOURCE_DIR}/sgfx/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/sgfx/panel/command
+        ${CMAKE_CURRENT_SOURCE_DIR}/sgfx/interface
 )
 
 target_compile_options(display_driver PRIVATE

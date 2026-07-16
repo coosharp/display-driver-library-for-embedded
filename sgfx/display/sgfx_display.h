@@ -38,7 +38,7 @@ typedef void (* display_flush_fn_t)         (const sgfx_display_drawing_t ** dra
                                      uint16_t y1, 
                                      uint16_t x2, 
                                      uint16_t y2, 
-                                     const void * data);
+                                     const void * src);
 typedef int  (* display_ioctrl_fn_t)        (const sgfx_display_drawing_t ** drawing, 
                                      uint32_t command, 
                                      void * arg);
@@ -93,7 +93,7 @@ typedef enum
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
-void sgfx_display_register_instance(struct sgfx_display * self, 
+void sgfx_display_register(struct sgfx_display * self, 
                             const struct sgfx_display_drawing ** drawing, 
                             const struct sgfx_display_backlight ** backlight);
 
