@@ -5,11 +5,7 @@
 
 int main(void)
 {
-    struct sgfx_spi spi_instance = 
-    {
-        .chip_select_enable = NULL,
-        .chip_select_disable = NULL,
-    };
+    struct sgfx_spi spi_instance = {0};
     sgfx_spi_register(&spi_instance);
 
     struct sgfx_st7735 st7735_instance;
@@ -20,6 +16,10 @@ int main(void)
 
     struct sgfx_display display_instance;
     sgfx_display_register(&display_instance, &lcd_instance.display_drawing, NULL);
+
+    sgfx_st7735_prepare(&st7735_instance.lcd_drawing);
+
+
 
     return 0;
 }

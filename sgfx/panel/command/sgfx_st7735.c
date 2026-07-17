@@ -8,20 +8,24 @@
  *********************/
 #include "sgfx_st7735.h"
 #include "sgfx_config.h"
+#include "sgfx_log.h"
 /*********************
  *      MACROS
  *********************/
-
+#if SGFX_LOG_ST7735_ENABLE
+    #define LOG_TRACE_ST7735(fmt, ...)  SGFX_LOG_TRACE(fmt, ##__VA_ARGS__)
+    #define LOG_INFO_ST7735(fmt, ...)   SGFX_LOG_INFO(fmt, ##__VA_ARGS__)
+    #define LOG_WARN_ST7735(fmt, ...)   SGFX_LOG_WARN(fmt, ##__VA_ARGS__)
+    #define LOG_ERROR_ST7735(fmt, ...)  SGFX_LOG_ERROR(fmt, ##__VA_ARGS__)
+#else
+    #define LOG_TRACE_ST7735(fmt, ...)  do{} while(0)
+    #define LOG_INFO_ST7735(fmt, ...)   do{} while(0)
+    #define LOG_WARN_ST7735(fmt, ...)   do{} while(0)
+    #define LOG_ERROR_ST7735(fmt, ...)  do{} while(0)
+#endif
 /**********************
  *      DEFINES
  **********************/ 
-
-
-#define LOG_TRACE_ST7735
-#define LOG_INFO_ST7735
-#define LOG_WARN_ST7735
-#define LOG_ERROR_ST7735
-
 
 #define ST7735_DELAY    (0x80)
 
@@ -49,7 +53,7 @@
  **********************/
 static void _st7735_start_transfer(const struct sgfx_lcd_drawing ** drawing);
 static void _st7735_stop_transfer(const struct sgfx_lcd_drawing ** drawing);
-static void _st7735_delay_ms(const struct sgfx_lcd_drawing ** drawing, uint32_t ms);
+static void _st7735_delay_ms(const struct sgfx_lcd_drawing ** drawing, uint32_t nms);
 static void _st7735_write_reg(const struct sgfx_lcd_drawing ** drawing, uint8_t reg);
 static void _st7735_send_data(const struct sgfx_lcd_drawing ** drawing,
                               const uint8_t * src,
@@ -109,29 +113,31 @@ void sgfx_st7735_register(struct sgfx_st7735 * self, const struct sgfx_lcd_drive
 
 void sgfx_st7735_prepare(const struct sgfx_lcd_drawing ** drawing)
 {
+    LOG_TRACE_ST7735("Begin!");
+
     uint8_t cmd = 0;
     uint8_t num = 0;
-    uint8_t * addr = &ucInitCmdList[0];
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
+    uint32_t index = 0;
+    const uint8_t * addr = &ucInitCmdList[0]; 
 
     _st7735_start_transfer(drawing);
 
-    for(;;) {
-        cmd = *addr++;
-        num = *addr++;
+    for(;index < sizeof(ucInitCmdList) / sizeof(ucInitCmdList[0]);) {
+        cmd = addr[index++];
+        num = addr[index++];
         if(cmd == ST7735_DELAY) {
             _st7735_delay_ms(drawing, num);
-        }
-        else if(cmd == ST7735_COLOR_MODE) {
-
         }
         else {
             _st7735_write_reg(drawing, cmd);
             _st7735_send_data(drawing, addr, num);
+            index += num;
         }
     }
 
     _st7735_stop_transfer(drawing);
+
+    LOG_TRACE_ST7735("End!");
 }
 
 void sgfx_st7735_fill_point(const struct sgfx_lcd_drawing ** drawing, 
@@ -139,7 +145,6 @@ void sgfx_st7735_fill_point(const struct sgfx_lcd_drawing ** drawing,
                             uint16_t y,
                             uint32_t color)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
     uint16_t pixel = 0;
 
     /* Exchange LSB and MSB to fit LCD specification */
@@ -192,7 +197,7 @@ static void _st7735_stop_transfer(const struct sgfx_lcd_drawing ** drawing)
     sgfx_lcd_stop_transfer(self->lcd_driver);
 }
 
-static void _st7735_delay_ms(const struct sgfx_lcd_drawing ** drawing, uint32_t ms)
+static void _st7735_delay_ms(const struct sgfx_lcd_drawing ** drawing, uint32_t nms)
 {
 
 }
@@ -217,7 +222,6 @@ static void _st7735_set_cursor(const struct sgfx_lcd_drawing ** drawing,
                                uint16_t x, 
                                uint16_t y)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
     const uint8_t command[] = {ST7735_CASET, ST7735_RASET, ST7735_RAMWR};
     
     uint8_t x_coord[] = {(x >> 8U), (x & 0xFFU)};
@@ -242,7 +246,6 @@ static void _st7735_set_window(const struct sgfx_lcd_drawing ** drawing,
                                uint16_t w, 
                                uint16_t h)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
     const uint8_t command[] = {ST7735_CASET, ST7735_RASET, ST7735_RAMWR};
 
     uint16_t x_start = x;

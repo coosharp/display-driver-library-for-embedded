@@ -44,6 +44,8 @@ extern "C" {
 #if SGFX_LOG_ENABLE
     #define SGFX_LOG_DISPLAY_ENABLE  1
 
+    #define SGFX_LOG_LCD_ENABLE      1
+
     #define SGFX_LOG_ST7735_ENABLE   1
 
     #define SGFX_LOG_ST7789_ENABLE   1
@@ -54,13 +56,15 @@ extern "C" {
 #else 
     #define SGFX_LOG_DISPLAY_ENABLE  0
 
-    #define SGFX_LOG_ST7735_ENABLE
+    #define SGFX_LOG_LCD_ENABLE      0
 
-    #define SGFX_LOG_ST7789_ENABLE
+    #define SGFX_LOG_ST7735_ENABLE   0
 
-    #define SGFX_LOG_ST7796_ENABLE
+    #define SGFX_LOG_ST7789_ENABLE   0
 
-    #define SGFX_LOG_SPI_ENABLE
+    #define SGFX_LOG_ST7796_ENABLE   0
+
+    #define SGFX_LOG_SPI_ENABLE      0
 #endif
 
 

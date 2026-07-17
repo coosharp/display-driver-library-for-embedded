@@ -7,10 +7,23 @@
  *      INCLUDES
  *********************/
 #include "sgfx_lcd.h"
-
+#include "sgfx_log.h"
 /*********************
  *      MACROS
  *********************/
+#if SGFX_LOG_LCD_ENABLE
+    #define LOG_TRACE_LCD(fmt, ...)     SGFX_LOG_TRACE(fmt, ##__VA_ARGS__)
+    #define LOG_INFO_LCD(fmt, ...)      SGFX_LOG_INFO(fmt, ##__VA_ARGS__)
+    #define LOG_WARN_LCD(fmt, ...)      SGFX_LOG_WARN(fmt, ##__VA_ARGS__)
+    #define LOG_ERROR_LCD(fmt, ...)     SGFX_LOG_ERROR(fmt, ##__VA_ARGS__)
+#else
+    #define LOG_TRACE_LCD(fmt, ...)     do{} while(0)
+    #define LOG_INFO_LCD(fmt, ...)      do{} while(0)
+    #define LOG_WARN_LCD(fmt, ...)      do{} while(0)
+    #define LOG_ERROR_LCD(fmt, ...)     do{} while(0)
+#endif
+
+
 
 /**********************
  *   GLOBAL VARIABLES
@@ -38,36 +51,97 @@ int sgfx_lcd_start_transfer(const struct sgfx_lcd_driver ** driver)
 {
     lcd_start_transfer_fn_t fn = (*driver)->start_transfer;
 
+    if(fn) {
+        LOG_TRACE_LCD("Start to transfer!");
+        return fn(driver);
+    }
+    else {
+        LOG_WARN_LCD("Start transfer function not implemented!");
+        return 0;
+    }
 }
 
 int sgfx_lcd_stop_transfer(const struct sgfx_lcd_driver ** driver)
 {
     lcd_stop_transfer_fn_t fn = (*driver)->stop_transfer;
+
+    if(fn) {
+        LOG_TRACE_LCD("Stop to transfer!");
+        return fn(driver);
+    }
+    else {
+        LOG_WARN_LCD("Stop transfer function not implemented!");
+        return 0;
+    }
 }
 
 int sgfx_lcd_write_command(const struct sgfx_lcd_driver ** driver, uint8_t command)
 {
     lcd_write_command_fn_t fn = (*driver)->write_command;
+
+    if(fn) {
+        LOG_TRACE_LCD("LCD write command: 0x%02x", command);
+        return fn(driver, command);
+    }
+    else {
+        LOG_WARN_LCD("Write command function not implemented!");
+        return 0;
+    }
 }
 
 int sgfx_lcd_write_data8(const struct sgfx_lcd_driver ** driver, const uint8_t * src, size_t size)
 {
     lcd_write_data8_fn_t fn = (*driver)->write_data8;
+
+    if(fn) {
+        LOG_TRACE_LCD("LCD write data8, addr = 0x%x, size = %d", src, size);
+        return fn(driver, src, size);
+    }
+    else {
+        LOG_WARN_LCD("Write data8 function not implemented!");
+        return 0;
+    }
 }
 
 int sgfx_lcd_write_data16(const struct sgfx_lcd_driver ** driver, const uint16_t * src, size_t size)
 {
     lcd_write_data16_fn_t fn = (*driver)->write_data16;
+
+    if(fn) {
+        LOG_TRACE_LCD("LCD write data16, addr = 0x%x, size = %d", src, size);
+        return fn(driver, src, size);
+    }
+    else {
+        LOG_WARN_LCD("Write data16 function not implemented!");
+        return 0;
+    }
 }
 
 int sgfx_lcd_copy_data(const struct sgfx_lcd_driver ** driver, const void * src, size_t size)
 {
     lcd_copy_data_fn_t fn = (*driver)->copy_data;
+
+    if(fn) {
+        LOG_TRACE_LCD("LCD copy data, addr = 0x%x, size = %d", src, size);
+        return fn(driver, src, size);
+    }
+    else {
+        LOG_WARN_LCD("Copy data function not implemented!");
+        return 0;
+    }
 }
 
-void sgfx_lcd_delay_ms(const struct sgfx_lcd_driver ** driver)
+void sgfx_lcd_delay_ms(const struct sgfx_lcd_driver ** driver, uint32_t nms)
 {
     lcd_delay_ms_fn_t fn = (*driver)->delay_ms;
+
+    if(fn) {
+        LOG_TRACE_LCD("Delay %d ms", nms);
+        return fn(driver, nms);
+    }
+    else {
+        LOG_WARN_LCD("Delay ms function not implemented!");
+    }
 }
 
 /**********************
@@ -123,6 +197,8 @@ void sgfx_lcd_register(struct sgfx_lcd * self, const struct sgfx_lcd_drawing ** 
 {
     self->display_drawing = &tDisplayDrawingLCD;
     self->lcd_drawing = drawing;
+
+    LOG_INFO_LCD("LCD instance registered with drawing: %x", drawing);
 }
 
 

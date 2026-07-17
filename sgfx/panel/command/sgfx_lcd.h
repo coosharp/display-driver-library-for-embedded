@@ -53,7 +53,7 @@ typedef int  (* lcd_write_command_fn_t)(const sgfx_lcd_driver_t ** driver, uint8
 typedef int  (* lcd_write_data8_fn_t)(const sgfx_lcd_driver_t ** driver, const uint8_t * src, size_t size);
 typedef int  (* lcd_write_data16_fn_t)(const sgfx_lcd_driver_t ** driver, const uint16_t * src, size_t size);
 typedef int  (* lcd_copy_data_fn_t)(const sgfx_lcd_driver_t ** driver, const void * src, size_t size);
-typedef void (* lcd_delay_ms_fn_t) (const sgfx_lcd_driver_t ** driver, uint32_t ms);
+typedef void (* lcd_delay_ms_fn_t) (const sgfx_lcd_driver_t ** driver, uint32_t nms);
 
 struct sgfx_lcd_drawing
 {
@@ -91,7 +91,7 @@ int sgfx_lcd_write_command(const struct sgfx_lcd_driver ** driver, uint8_t comma
 int sgfx_lcd_write_data8(const struct sgfx_lcd_driver ** driver, const uint8_t * src, size_t size);
 int sgfx_lcd_write_data16(const struct sgfx_lcd_driver ** driver, const uint16_t * src, size_t size);
 int sgfx_lcd_copy_data(const struct sgfx_lcd_driver ** driver, const void * src, size_t size);
-void sgfx_lcd_delay_ms(const struct sgfx_lcd_driver ** driver);
+void sgfx_lcd_delay_ms(const struct sgfx_lcd_driver ** driver, uint32_t nms);
 
 
 
