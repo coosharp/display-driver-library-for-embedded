@@ -17,6 +17,7 @@ add_library(display_driver STATIC
     sgfx/interface/sgfx_spi.c
     sgfx/panel/command/sgfx_lcd.c
     sgfx/panel/command/sgfx_st7735.c
+    sgfx/backlight/sgfx_backlight.c
 )
 
 target_include_directories(display_driver
@@ -26,6 +27,7 @@ target_include_directories(display_driver
         ${CMAKE_CURRENT_SOURCE_DIR}/sgfx/common
         ${CMAKE_CURRENT_SOURCE_DIR}/sgfx/panel/command
         ${CMAKE_CURRENT_SOURCE_DIR}/sgfx/interface
+        ${CMAKE_CURRENT_SOURCE_DIR}/sgfx/backlight
 )
 
 target_compile_options(display_driver PRIVATE

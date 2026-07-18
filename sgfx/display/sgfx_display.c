@@ -50,7 +50,7 @@ void sgfx_display_register(struct sgfx_display * self,
     self->backlight = backlight;
     self->context.color = 0xFFFFFFFF; /* Default color: white */
 
-    LOG_INFO_DISPLAY("Display instance registered with drawing: %x and backlight: %x", drawing, backlight);
+    LOG_INFO_DISPLAY("Display instance registered with drawing: %p and backlight: %p", (const void *)drawing, (const void *)backlight);
 }
 
 

@@ -14,7 +14,7 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "backlight_ctrl.h"
+#include "sgfx_display.h"
 /*********************
  *      MACROS
  *********************/
@@ -22,20 +22,37 @@ extern "C" {
 /*********************
  *    DECLARATIONS
  *********************/
-struct backlight
+
+typedef void (* backlight_set_gpio_level_fn_t)(void);
+typedef void (* backlight_clear_gpio_level_fn_t)(void);
+typedef void (* backlight_set_pwm_duty_fn_t)(uint8_t brightness);
+
+struct sgfx_backlight_variable
 {
-    const struct display_backlight * backlight;
-    const struct backlight_ctrl ** ctrl;
+    uint8_t state;
     uint8_t brightness;
+};
+
+struct sgfx_backlight
+{
+    const struct sgfx_display_backlight * display_backlight;
+
+    backlight_set_gpio_level_fn_t   set_gpio_level;
+    backlight_clear_gpio_level_fn_t clear_gpio_level;
+    backlight_set_pwm_duty_fn_t     set_pwm_duty;
+
+    struct sgfx_backlight_variable backlight_variable;
 };
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
-void backlight_register(struct backlight * self, const struct backlight_ctrl ** ctrl);
-void backlight_enable(const struct display_backlight ** backlight);
-void backlight_disable(const struct display_backlight ** backlight);
-void backlight_set_brightness(const struct display_backlight ** backlight, uint8_t brightness);
- 
+void sgfx_backlight_register(struct sgfx_backlight * self);
+void sgfx_backlight_set_state(const struct sgfx_display_backlight ** display_backlight, uint8_t state);
+void sgfx_backlight_get_state(const struct sgfx_display_backlight ** display_backlight, uint8_t * state);
+void sgfx_backlight_set_brightness(const struct sgfx_display_backlight ** display_backlight, uint8_t brightness);
+void sgfx_backlight_get_brightness(const struct sgfx_display_backlight ** display_backlight, uint8_t * brightness);
+
+
 
 #ifdef __cplusplus
 }

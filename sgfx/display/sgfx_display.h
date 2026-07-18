@@ -98,7 +98,7 @@ void sgfx_display_register(struct sgfx_display * self,
                             const struct sgfx_display_backlight ** backlight);
 
 
-
+void sgfx_display_set_backlight_state(const struct sgfx_display * self, uint8_t state);
 
 #ifdef __cplusplus
 }

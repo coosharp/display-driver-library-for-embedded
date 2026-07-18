@@ -84,7 +84,7 @@ static int _spi_write_data8(const struct sgfx_lcd_driver ** driver, const uint8_
     spi_write_data8 fn = self->write_data8;
 
     if(fn) {
-        LOG_TRACE_SPI("SPI write data, addr = 0x%x, size = %d", src, size);
+        LOG_TRACE_SPI("SPI write data, addr = %p, size = %zu", (const void *)src, size);
         return fn(src, size);
     }
     else {
@@ -100,7 +100,7 @@ static int _spi_dma_transfer(const struct sgfx_lcd_driver ** driver, const void 
     spi_dma_transfer fn = self->dma_transfer;
 
     if(fn) {
-        LOG_TRACE_SPI("SPI dma transfer data, addr = 0x%x, size = %d", src, size);
+        LOG_TRACE_SPI("SPI dma transfer data, addr = %p, size = %zu", (const void *)src, size);
         return fn(src, size);
     }
     else {

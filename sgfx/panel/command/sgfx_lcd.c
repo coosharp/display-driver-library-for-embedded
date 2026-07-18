@@ -40,13 +40,6 @@
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/ 
-
-void sgfx_lcd_prepare()
-{
-
-}
-
-
 int sgfx_lcd_start_transfer(const struct sgfx_lcd_driver ** driver)
 {
     lcd_start_transfer_fn_t fn = (*driver)->start_transfer;
@@ -94,7 +87,7 @@ int sgfx_lcd_write_data8(const struct sgfx_lcd_driver ** driver, const uint8_t *
     lcd_write_data8_fn_t fn = (*driver)->write_data8;
 
     if(fn) {
-        LOG_TRACE_LCD("LCD write data8, addr = 0x%x, size = %d", src, size);
+        LOG_TRACE_LCD("LCD write data8, addr = %p, size = %zu", (const void *)src, size);
         return fn(driver, src, size);
     }
     else {
@@ -108,7 +101,7 @@ int sgfx_lcd_write_data16(const struct sgfx_lcd_driver ** driver, const uint16_t
     lcd_write_data16_fn_t fn = (*driver)->write_data16;
 
     if(fn) {
-        LOG_TRACE_LCD("LCD write data16, addr = 0x%x, size = %d", src, size);
+        LOG_TRACE_LCD("LCD write data16, addr = %p, size = %zu", (const void *)src, size);
         return fn(driver, src, size);
     }
     else {
@@ -122,7 +115,7 @@ int sgfx_lcd_copy_data(const struct sgfx_lcd_driver ** driver, const void * src,
     lcd_copy_data_fn_t fn = (*driver)->copy_data;
 
     if(fn) {
-        LOG_TRACE_LCD("LCD copy data, addr = 0x%x, size = %d", src, size);
+        LOG_TRACE_LCD("LCD copy data, addr = %p, size = %zu", (const void *)src, size);
         return fn(driver, src, size);
     }
     else {
@@ -155,6 +148,13 @@ static void _lcd_fill_point(const struct sgfx_display_drawing ** drawing,
     const struct sgfx_lcd * self = (const struct sgfx_lcd *)drawing;
 
     lcd_fill_point_fn_t fn = (*self->lcd_drawing)->fill_point;
+
+    if(fn) {
+        fn(self->lcd_drawing, x, y, color);
+    }
+    else {
+        LOG_WARN_LCD("LCD fill point function not implemented!");
+    }
 }
 
 static void _lcd_fill_rectangle(const struct sgfx_display_drawing ** drawing, 
@@ -165,6 +165,15 @@ static void _lcd_fill_rectangle(const struct sgfx_display_drawing ** drawing,
                              uint32_t color)
 {
     const struct sgfx_lcd * self = (const struct sgfx_lcd *)drawing;
+
+    lcd_fill_rectangle_fn_t fn = (*self->lcd_drawing)->fill_rectangle;
+
+    if(fn) {
+        fn(self->lcd_drawing, x, y, w, h, color);
+    }
+    else {
+        LOG_WARN_LCD("LCD fill rect function not implemented!");
+    }
 }
 
 
@@ -175,7 +184,16 @@ static void _lcd_flush(const struct sgfx_display_drawing ** drawing,
                     uint16_t y2, 
                     const void * src)
 {
+    const struct sgfx_lcd * self = (const struct sgfx_lcd *)drawing;
 
+    lcd_flush_fn_t fn = (*self->lcd_drawing)->flush;
+
+    if(fn) {
+        fn(self->lcd_drawing, x1, y1, x2, y2, src);
+    }
+    else {
+        LOG_WARN_LCD("LCD flush function not implemented!");
+    }
 }
 
 static int _lcd_ioctrl(const struct sgfx_display_drawing ** drawing,
@@ -183,6 +201,16 @@ static int _lcd_ioctrl(const struct sgfx_display_drawing ** drawing,
                     void * arg)
 {
     const struct sgfx_lcd * self = (const struct sgfx_lcd *)drawing;
+
+    lcd_ioctrl_fn_t fn = (*self->lcd_drawing)->ioctrl;
+
+    if(fn) {
+        return fn(self->lcd_drawing, command, arg);
+    }
+    else {
+        LOG_WARN_LCD("LCD ioctrl function not implemented!");
+        return 0;
+    }
 }
 
 static const struct sgfx_display_drawing tDisplayDrawingLCD = 
@@ -198,7 +226,7 @@ void sgfx_lcd_register(struct sgfx_lcd * self, const struct sgfx_lcd_drawing ** 
     self->display_drawing = &tDisplayDrawingLCD;
     self->lcd_drawing = drawing;
 
-    LOG_INFO_LCD("LCD instance registered with drawing: %x", drawing);
+    LOG_INFO_LCD("LCD instance registered with drawing: %p", (const void *)drawing);
 }
 
 

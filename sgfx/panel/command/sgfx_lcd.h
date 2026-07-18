@@ -40,7 +40,7 @@ typedef void (* lcd_flush_fn_t)         (const sgfx_lcd_drawing_t ** drawing,
                                      uint16_t y1, 
                                      uint16_t x2, 
                                      uint16_t y2, 
-                                     const void * data);
+                                     const void * src);
 typedef int  (* lcd_ioctrl_fn_t)        (const sgfx_lcd_drawing_t ** drawing, 
                                      uint32_t command, 
                                      void * arg);
@@ -72,6 +72,13 @@ struct sgfx_lcd_driver
     lcd_write_data16_fn_t write_data16;
     lcd_copy_data_fn_t copy_data;
     lcd_delay_ms_fn_t delay_ms;
+};
+
+struct sgfx_lcd_variable
+{
+    uint16_t width;
+    uint16_t height;
+    uint16_t rotation;
 };
 
 struct sgfx_lcd

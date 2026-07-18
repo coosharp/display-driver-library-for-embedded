@@ -110,6 +110,20 @@ void sgfx_st7735_register(struct sgfx_st7735 * self, const struct sgfx_lcd_drive
     self->lcd_driver = driver;
 }
 
+void sgfx_st7735_init(struct sgfx_st7735 * self, 
+                      uint16_t width,
+                      uint16_t height,
+                      uint16_t rotation)
+{
+    self->lcd_variable.width = width;
+    self->lcd_variable.height = height;
+    self->lcd_variable.rotation = rotation;
+
+    sgfx_st7735_prepare(&self->lcd_drawing);
+
+    _st7735_set_orientation(&self->lcd_drawing, rotation);
+}
+
 
 void sgfx_st7735_prepare(const struct sgfx_lcd_drawing ** drawing)
 {
@@ -140,6 +154,7 @@ void sgfx_st7735_prepare(const struct sgfx_lcd_drawing ** drawing)
     LOG_TRACE_ST7735("End!");
 }
 
+
 void sgfx_st7735_fill_point(const struct sgfx_lcd_drawing ** drawing, 
                             uint16_t x,
                             uint16_t y,
@@ -167,7 +182,33 @@ void sgfx_st7735_fill_rectangle(const struct sgfx_lcd_drawing ** drawing,
                                 uint16_t h,
                                 uint32_t color)
 {
+    uint16_t pixel = 0;
+    uint8_t pixel_bytes[2] = {0};
+    uint32_t pixel_count = 0U;
+    uint32_t index = 0U;
 
+    if((w == 0U) || (h == 0U)) {
+        return;
+    }
+
+    /* Exchange LSB and MSB to fit LCD specification */
+    pixel = (uint16_t)((uint16_t)color << 8U);
+    pixel |= (uint16_t)((uint16_t)(color >> 8U));
+
+    pixel_bytes[0] = (uint8_t)(pixel & 0xFFU);
+    pixel_bytes[1] = (uint8_t)(pixel >> 8U);
+
+    pixel_count = ((uint32_t)w * (uint32_t)h);
+
+    _st7735_set_window(drawing, x, y, w, h);
+
+    _st7735_start_transfer(drawing);
+
+    for(index = 0U; index < pixel_count; index++) {
+        _st7735_send_data(drawing, pixel_bytes, sizeof(pixel_bytes));
+    }
+
+    _st7735_stop_transfer(drawing);
 }
 
 void sgfx_st7735_flush(const struct sgfx_lcd_drawing ** drawing,
@@ -177,7 +218,23 @@ void sgfx_st7735_flush(const struct sgfx_lcd_drawing ** drawing,
                        uint16_t y2,
                        const void * src)
 {
+    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
+    uint16_t width = (uint16_t)(x2 - x1 + 1U);
+    uint16_t height = (uint16_t)(y2 - y1 + 1U);
+    uint32_t pixel_count = ((uint32_t)width * (uint32_t)height);
 
+    if((src == NULL) || (x1 > x2) || (y1 > y2)) {
+        return;
+    }
+
+
+    _st7735_set_window(drawing, x1, y1, width, height);
+
+    _st7735_start_transfer(drawing);
+ 
+    sgfx_lcd_copy_data(self->lcd_driver, src, pixel_count);
+
+    _st7735_stop_transfer(drawing);
 }
 
 /**********************
@@ -199,7 +256,9 @@ static void _st7735_stop_transfer(const struct sgfx_lcd_drawing ** drawing)
 
 static void _st7735_delay_ms(const struct sgfx_lcd_drawing ** drawing, uint32_t nms)
 {
+    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
 
+    sgfx_lcd_delay_ms(self->lcd_driver, nms);
 }
 
 static void _st7735_write_reg(const struct sgfx_lcd_drawing ** drawing, uint8_t reg)
@@ -274,8 +333,6 @@ static void _st7735_set_window(const struct sgfx_lcd_drawing ** drawing,
 
 static void _st7735_set_orientation(const struct sgfx_lcd_drawing ** drawing, uint16_t rotation)
 {
-    const struct sgfx_st7735 * self = (const struct sgfx_st7735 *)drawing;
-
     uint8_t mad_ctrl_param[1] = {0};
 
     if(rotation == 0) {

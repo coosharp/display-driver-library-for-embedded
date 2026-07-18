@@ -27,11 +27,16 @@ struct sgfx_st7735
 {
     const struct sgfx_lcd_drawing * lcd_drawing;
     const struct sgfx_lcd_driver ** lcd_driver;
+    struct sgfx_lcd_variable lcd_variable;
 };
 /**********************
 *  GLOBAL PROTOTYPES
  **********************/
 void sgfx_st7735_register(struct sgfx_st7735 * self, const struct sgfx_lcd_driver ** driver);
+void sgfx_st7735_init(struct sgfx_st7735 * self, 
+                      uint16_t width,
+                      uint16_t height,
+                      uint16_t rotation);
 void sgfx_st7735_prepare(const struct sgfx_lcd_drawing ** drawing);
 void sgfx_st7735_fill_point(const struct sgfx_lcd_drawing ** drawing, 
                             uint16_t x,
